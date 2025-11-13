@@ -3,455 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Examen Final de Catequesis</title>
+    <title>Desafíos de Catequesis</title>
     <!-- Incluyendo Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Usando la fuente Inter de Tailwind */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* bg-gray-100 */
+            background-color: #f0f4f8; /* Un azul-gris muy claro */
         }
-        /* Estilos para los botones de opción */
-        .option-btn {
+        
+        /* Estilos para los juegos */
+        .game-card {
             transition: all 0.3s ease;
         }
-        .option-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-        .option-btn:disabled {
+        .game-card.completed {
+            background-color: #e0f2fe; /* light-blue-100 */
+            border-color: #0284c7; /* light-blue-600 */
+        }
+        .game-card.completed .check-mark {
+            display: block;
+        }
+        
+        /* --- Estilos para 'Armar' (Ordenar) --- */
+        .sort-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sort-item:hover {
+            background-color: #f1f5f9; /* gray-100 */
+        }
+        .sort-item.correct {
+            background-color: #dcfce7; /* green-100 */
+            border-color: #22c55e; /* green-500 */
+            color: #166534; /* green-800 */
+            cursor: not-allowed;
+        }
+        
+        /* --- Estilos para 'Unir' (Emparejar) --- */
+        .match-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #e5e7eb; /* gray-200 */
+        }
+        .match-item:hover {
+            border-color: #3b82f6; /* blue-500 */
+            background-color: #eff6ff; /* blue-50 */
+        }
+        .match-item.selected {
+            background-color: #bfdbfe; /* blue-200 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .match-item.matched {
+            background-color: #dcfce7; /* green-100 */
+            border-color: #22c55e; /* green-500 */
+            color: #166534; /* green-800 */
             cursor: not-allowed;
             opacity: 0.8;
         }
-        .correct {
-            background-color: #22c55e; /* green-500 */
-            color: white;
-            border-color: #16a34a; /* green-600 */
+
+        /* --- Estilos para 'Completar' (Input) --- */
+        .complete-input {
+            border-color: #9ca3af; /* gray-400 */
+            transition: all 0.2s ease;
         }
-        .incorrect {
-            background-color: #ef4444; /* red-500 */
-            color: white;
-            border-color: #dc2626; /* red-600 */
+        .complete-input:focus {
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px #bfdbfe; /* blue-200 */
+            outline: none;
+        }
+        .complete-input.correct {
+            border-color: #22c55e; /* green-500 */
+            background-color: #f0fdf4; /* green-50 */
+        }
+        .complete-input.incorrect {
+            border-color: #ef4444; /* red-500 */
+            background-color: #fef2f2; /* red-50 */
+        }
+
+        /* --- Animación de 'Error' --- */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div id="quiz-container" class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 md:p-10">
-        
-        <!-- Contenedor Inicial -->
-        <div id="start-container" class="text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Examen Final de Catequesis</h1>
-            <p class="text-lg text-gray-600 mb-8">Tienes 40 segundos para responder cada una de las 20 preguntas. ¡Mucha suerte!</p>
-            <button id="start-btn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-12 rounded-lg text-lg transition duration-300">
-                Comenzar Examen
+    <!-- Contenedor Principal -->
+    <div class="w-full max-w-4xl mx-auto">
+
+        <!-- --- Pantalla de Inicio --- -->
+        <div id="start-screen" class="text-center bg-white p-8 md:p-12 rounded-2xl shadow-xl">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4">¡Desafío de Catequesis!</h1>
+            <p class="text-xl text-gray-600 mb-8">Completa los 4 mini-juegos interactivos para demostrar lo que has aprendido.</p>
+            <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-12 rounded-lg text-xl transition duration-300 transform hover:scale-105">
+                ¡Comenzar!
             </button>
         </div>
 
-        <!-- Contenedor del Quiz (Oculto al inicio) -->
-        <div id="game-container" class="hidden">
-            
-            <!-- Encabezado: Temporizador y Progreso -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4">
-                <div id="progress-text" class="text-lg font-semibold text-gray-700 mb-4 md:mb-0">
-                    Pregunta <span id="question-number">1</span> de 20
+        <!-- --- Pantalla del Menú de Juegos (Hub) --- -->
+        <div id="hub-screen" class="hidden">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">Sala de Desafíos</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Tarjeta 1: Armar -->
+                <div id="card-armar" class="game-card data-game-id="armar" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                    <div class="flex items-center">
+                        <span class="text-3xl mr-4">&#128221;</span> <!-- Icono de 'ordenar' -->
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Armar la Confesión</h2>
+                            <p class="text-gray-600">Coloca los 5 pasos en orden.</p>
+                            <span class="check-mark hidden font-bold text-green-600">¡Completado! &#10003;</span>
+                        </div>
+                    </div>
                 </div>
-                <!-- Temporizador Grande -->
-                <div id="timer-display" class="text-6xl font-bold text-blue-600">
-                    40
+                
+                <!-- Tarjeta 2: Completar -->
+                <div id="card-completar" class="game-card data-game-id="completar" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                    <div class="flex items-center">
+                        <span class="text-3xl mr-4">&#9999;&#65039;</span> <!-- Icono de 'escribir' -->
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Completar Oraciones</h2>
+                            <p class="text-gray-600">Rellena las palabras que faltan.</p>
+                            <span class="check-mark hidden font-bold text-green-600">¡Completado! &#10003;</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Pregunta -->
-            <div id="question-container" class="mb-8">
-                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                    Cargando pregunta...
-                </h2>
-            </div>
+                <!-- Tarjeta 3: Unir Sacramentos -->
+                <div id="card-unir-sacr" class="game-card data-game-id="unir-sacr" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                    <div class="flex items-center">
+                        <span class="text-3xl mr-4">&#128279;</span> <!-- Icono de 'unir' -->
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Unir los Sacramentos</h2>
+                            <p class="text-gray-600">Empareja el sacramento y su gracia.</p>
+                            <span class="check-mark hidden font-bold text-green-600">¡Completado! &#10003;</span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Opciones -->
-            <div id="options-container" class="grid grid-cols-1 gap-4">
-                <!-- Las opciones se generarán con JS aquí -->
-            </div>
+                <!-- Tarjeta 4: Unir Misa -->
+                <div id="card-unir-misa" class="game-card data-game-id="unir-misa" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                    <div class="flex items-center">
+                        <span class="text-3xl mr-4">&#128279;</span> <!-- Icono de 'unir' -->
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">El Tesoro de la Misa</h2>
+                            <p class="text-gray-600">Empareja objetos y personas.</p>
+                            <span class="check-mark hidden font-bold text-green-600">¡Completado! &#10003;</span>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- NUEVO: Contenedor de Explicación (Oculto) -->
-            <div id="explanation-container" class="hidden mt-6 p-4 bg-gray-100 rounded-lg border border-gray-300">
-                <h3 class="font-bold text-lg text-gray-800 mb-2">Explicación:</h3>
-                <p id="explanation-text" class="text-gray-700"></p>
-            </div>
-
-            <!-- Botón de Siguiente (Oculto hasta responder) -->
-            <div class="mt-8 text-right">
-                <button id="next-btn" class="hidden bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-10 rounded-lg text-lg transition duration-300">
-                    Siguiente
-                </button>
             </div>
         </div>
 
-        <!-- Contenedor de Resultados (Oculto al inicio) -->
-        <div id="result-container" class="hidden text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">¡Examen completado!</h1>
-            <p class="text-2xl text-gray-600 mb-8">
-                Tu puntuación final es:
-                <span id="score-text" class="text-4xl font-bold text-blue-600">0 / 20</span>
-            </p>
-            <button id="restart-btn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-12 rounded-lg text-lg transition duration-300">
-                Volver a intentar
+        <!-- --- Pantalla de Juego Activo --- -->
+        <div id="game-screen" class="hidden bg-white p-8 md:p-12 rounded-2xl shadow-xl">
+            <button id="back-to-hub" class="mb-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">&larr; Volver al Menú</button>
+            <h2 id="game-title" class="text-3xl font-bold text-gray-800 mb-6">Título del Juego</h2>
+            <div id="game-content" class="min-h-[300px]">
+                <!-- El contenido de cada juego se inyectará aquí -->
+            </div>
+            <div id="game-message" class="mt-4 text-lg font-semibold text-center"></div>
+        </div>
+
+        <!-- --- Pantalla Final --- -->
+        <div id="end-screen" class="hidden text-center bg-white p-8 md:p-12 rounded-2xl shadow-xl">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-green-600 mb-4">¡Felicitaciones!</h1>
+            <p class="text-2xl text-gray-700 mb-8">¡Has completado todos los desafíos de catequesis!</p>
+            <button id="restart-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-12 rounded-lg text-xl transition duration-300">
+                Jugar de nuevo
             </button>
         </div>
+
     </div>
 
     <script>
-        // --- 1. DATOS DEL EXAMEN (Nuevas 20 Preguntas + Explicación) ---
-        const quizData = [
-            // 1. Sacramentos
+        // --- 1. Elementos del DOM ---
+        const startScreen = document.getElementById('start-screen');
+        const hubScreen = document.getElementById('hub-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const backToHubBtn = document.getElementById('back-to-hub');
+        const restartBtn = document.getElementById('restart-btn');
+
+        const gameTitle = document.getElementById('game-title');
+        const gameContent = document.getElementById('game-content');
+        const gameMessage = document.getElementById('game-message');
+
+        const gameCards = document.querySelectorAll('.game-card');
+
+        // --- 2. Estado del Juego ---
+        let completedGames = {
+            "armar": false,
+            "completar": false,
+            "unir-sacr": false,
+            "unir-misa": false
+        };
+
+        // --- 3. Navegación Principal ---
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            hubScreen.classList.remove('hidden');
+        });
+
+        backToHubBtn.addEventListener('click', () => {
+            gameScreen.classList.add('hidden');
+            hubScreen.classList.remove('hidden');
+            gameContent.innerHTML = ''; // Limpiar el juego
+            gameMessage.innerHTML = '';
+        });
+
+        restartBtn.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            // Resetear estado
+            completedGames = { "armar": false, "completar": false, "unir-sacr": false, "unir-misa": false };
+            document.querySelectorAll('.game-card').forEach(card => {
+                card.classList.remove('completed');
+                card.querySelector('.check-mark').style.display = 'none';
+            });
+        });
+
+        gameCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const gameId = card.getAttribute('data-game-id');
+                if (completedGames[gameId]) return; // No volver a jugar si ya está completo
+                
+                hubScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                loadGame(gameId);
+            });
+        });
+
+        // --- 4. Función para marcar juego como completo ---
+        function markGameAsComplete(gameId) {
+            completedGames[gameId] = true;
+            const card = document.getElementById(`card-${gameId}`);
+            card.classList.add('completed');
+            card.querySelector('.check-mark').style.display = 'block';
+
+            // Verificar si todos están completos
+            const allComplete = Object.values(completedGames).every(status => status === true);
+            if (allComplete) {
+                setTimeout(() => {
+                    gameScreen.classList.add('hidden');
+                    endScreen.classList.remove('hidden');
+                }, 1500); // Esperar un poco antes de mostrar la pantalla final
+            } else {
+                gameMessage.innerHTML = '<span class="text-green-600">¡Desafío completado! Vuelve al menú para elegir otro.</span>';
+            }
+        }
+
+        // --- 5. Lógica para cargar cada juego ---
+        function loadGame(gameId) {
+            gameMessage.innerHTML = '';
+            switch (gameId) {
+                case 'armar':
+                    loadGameArmar();
+                    break;
+                case 'completar':
+                    loadGameCompletar();
+                    break;
+                case 'unir-sacr':
+                    loadGameUnirSacr();
+                    break;
+                case 'unir-misa':
+                    loadGameUnirMisa();
+                    break;
+            }
+        }
+
+        // --- 6. Lógica de Juego: ARMAR (Ordenar) ---
+        let armarCurrentStep = 1;
+
+        function loadGameArmar() {
+            gameTitle.textContent = 'Armar la Confesión';
+            gameContent.innerHTML = `
+                <p class="text-lg text-gray-600 mb-6">Haz clic en los 5 pasos para una buena confesión, en el orden correcto.</p>
+                <div id="sort-container" class="space-y-3">
+                    <!-- Desordenados a propósito -->
+                    <div class="sort-item p-4 border rounded-lg text-lg" data-order="3">Propósito de enmienda</div>
+                    <div class="sort-item p-4 border rounded-lg text-lg" data-order="1">Examen de conciencia</div>
+                    <div class="sort-item p-4 border rounded-lg text-lg" data-order="5">Cumplir la penitencia</div>
+                    <div class="sort-item p-4 border rounded-lg text-lg" data-order="2">Dolor de los pecados (Contrición)</div>
+                    <div class="sort-item p-4 border rounded-lg text-lg" data-order="4">Decir los pecados al sacerdote (Confesión)</div>
+                </div>
+            `;
+            armarCurrentStep = 1;
+            const items = gameContent.querySelectorAll('.sort-item');
+            items.forEach(item => {
+                item.addEventListener('click', handleArmarClick);
+            });
+        }
+
+        function handleArmarClick(e) {
+            const selectedItem = e.currentTarget;
+            const selectedOrder = parseInt(selectedItem.dataset.order);
+
+            if (selectedOrder === armarCurrentStep) {
+                selectedItem.classList.add('correct');
+                selectedItem.innerHTML += ` <span class="font-bold">(${armarCurrentStep})</span>`;
+                selectedItem.removeEventListener('click', handleArmarClick); // Deshabilitar
+                armarCurrentStep++;
+
+                if (armarCurrentStep > 5) {
+                    markGameAsComplete('armar');
+                }
+            } else {
+                gameMessage.innerHTML = '<span class="text-red-600">¡Orden incorrecto! Intenta de nuevo desde el principio.</span>';
+                selectedItem.classList.add('shake');
+                setTimeout(() => selectedItem.classList.remove('shake'), 500);
+                // Resetear
+                armarCurrentStep = 1;
+                gameContent.querySelectorAll('.sort-item').forEach(item => {
+                    item.classList.remove('correct');
+                    item.innerHTML = item.innerHTML.split(' <span')[0]; // Quitar el número
+                    item.addEventListener('click', handleArmarClick); // Rehabilitar
+                });
+            }
+        }
+
+        // --- 7. Lógica de Juego: COMPLETAR (Rellenar) ---
+        let completarStep = 0;
+        const completarData = [
             {
-                question: "¿Qué sacramento es considerado la 'puerta de entrada' a todos los demás sacramentos?",
-                options: ["Eucaristía", "Confirmación", "Bautismo", "Matrimonio"],
-                correct: 2,
-                explanation: "El Bautismo es el primer sacramento; nos limpia del pecado original, nos hace hijos de Dios y miembros de la Iglesia. Sin él, no podemos recibir los demás."
+                text: 'Padre Nuestro, que estás en el cielo, santificado sea tu...',
+                answer: 'nombre'
             },
-            // 2. Confesión
             {
-                question: "En la confesión, ¿qué significa el 'Propósito de enmienda' (tercer paso)?",
-                options: ["Recordar los pecados", "Sentir tristeza por los pecados", "La firme decisión de no volver a pecar", "Rezar la penitencia"],
-                correct: 2,
-                explanation: "Es la decisión firme y sincera de evitar el pecado y las ocasiones de pecar. No es solo sentir tristeza (contrición), sino decidir cambiar."
+                text: '...Venga a nosotros tu...',
+                answer: 'reino'
             },
-            // 3. Dones
             {
-                question: "¿Qué Don del Espíritu Santo nos ayuda a ver y juzgar todas las cosas desde la perspectiva de Dios?",
-                options: ["Fortaleza", "Sabiduría", "Ciencia", "Piedad"],
-                correct: 1,
-                explanation: "La Sabiduría es el don que nos permite 'saborear' las cosas de Dios y ver el mundo con sus ojos, dándole el verdadero valor a todo."
+                text: 'Dios te salve, María, llena eres de...',
+                answer: 'gracia'
             },
-            // 4. Objetos Litúrgicos
             {
-                question: "¿Qué es el Sagrario o Tabernáculo?",
-                options: ["El libro con las lecturas", "La mesa donde se consagra", "La silla del sacerdote", "El lugar donde se reserva la Eucaristía"],
-                correct: 3,
-                explanation: "El Sagrario es la 'casita' especial donde se guardan las hostias consagradas (Cristo presente) después de la Misa, para adoración y para llevarla a los enfermos."
-            },
-            // 5. Oraciones
-            {
-                question: "¿Qué oración, enseñada por Jesús mismo, es considerada el resumen de todo el Evangelio?",
-                options: ["El Credo", "El Ave María", "El Padre Nuestro", "La Salve"],
-                correct: 2,
-                explanation: "El Padre Nuestro es la oración que Jesús nos enseñó. En ella le llamamos 'Padre' y pedimos por el Reino, el pan, el perdón y la liberación del mal."
-            },
-            // 6. Partes de la Misa
-            {
-                question: "¿En qué parte de la Misa el sacerdote o diácono explica las lecturas de la Biblia?",
-                options: ["En la Homilía", "En el ofertorio", "En la consagración", "En el Acto Penitencial"],
-                correct: 0,
-                explanation: "La Homilía es la explicación que da el sacerdote después del Evangelio, ayudándonos a entender y aplicar la Palabra de Dios en nuestra vida diaria."
-            },
-            // 7. Sacramentos
-            {
-                question: "¿Qué sacramento nos da la fuerza especial del Espíritu Santo para ser testigos de Cristo, completando la gracia del Bautismo?",
-                options: ["Orden Sacerdotal", "Unción de los Enfermos", "Confirmación", "Reconciliación"],
-                correct: 2,
-                explanation: "La Confirmación nos fortalece con los dones del Espíritu Santo, haciéndonos 'soldados' y testigos de Cristo en el mundo."
-            },
-            // 8. Objetos Litúrgicos
-            {
-                question: "¿Cómo se llama el lugar elevado (atril) desde donde se proclama la Palabra de Dios (lecturas y Evangelio)?",
-                options: ["Altar", "Sede", "Ambón", "Sagrario"],
-                correct: 2,
-                explanation: "El Ambón es el lugar dedicado a la proclamación de la Palabra de Dios. Es distinto del Altar, que es la mesa de la Eucaristía."
-            },
-            // 9. Confesión
-            {
-                question: "¿En qué momento de la confesión se suele rezar el 'Acto de Contrición' o 'Señor mío, Jesucristo'?",
-                options: ["Antes de entrar, como examen", "Después de decir los pecados y antes de la absolución", "Al final, como penitencia", "Al llegar a casa"],
-                correct: 1,
-                explanation: "El Acto de Contrición se reza para expresar nuestro dolor y arrepentimiento, justo después de confesar los pecados y antes de que el sacerdote nos dé la absolución."
-            },
-            // 10. Iglesia (Colombia)
-            {
-                question: "¿Quién es el actual Arzobispo de Bogotá y Cardenal Primado de Colombia?",
-                options: ["Cardenal Luis José Rueda Aparicio", "Mons. Rubén Salazar Gómez", "Cardenal Pedro Rubiano Sáenz", "Mons. Orlando Roa Barbosa"],
-                correct: 0,
-                explanation: "El Cardenal Luis José Rueda Aparicio es la máxima autoridad de la Arquidiócesis de Bogotá y ostenta el título honorífico de 'Primado de Colombia'."
-            },
-            // 11. Dones
-            {
-                question: "¿Qué Don del Espíritu Santo nos ayuda a comprender más profundamente las verdades de nuestra fe (la Biblia, la catequesis)?",
-                options: ["Ciencia", "Entendimiento", "Piedad", "Fortaleza"],
-                correct: 1,
-                explanation: "El Don de Entendimiento nos ilumina por dentro para comprender lo que Dios nos revela, yendo más allá de una simple lectura."
-            },
-            // 12. Objetos Litúrgicos
-            {
-                question: "¿Qué son las 'Vinajeras' que se usan en la Misa?",
-                options: ["Los libros de cantos", "Las velas del altar", "Pequeñas jarras que contienen el vino y el agua", "El incienso"],
-                correct: 2,
-                explanation: "Son dos pequeñas jarras. Una contiene el vino y la otra el agua que se usarán en la consagración (el sacerdote mezcla un poco de agua con el vino)."
-            },
-            // 13. Oraciones
-            {
-                question: "¿Qué oración es la profesión de nuestra fe, donde afirmamos 'Creo en un solo Dios, Padre Todopoderoso...'?",
-                options: ["El Acto de Contrición", "La Salve", "El Gloria", "El Credo"],
-                correct: 3,
-                explanation: "El Credo (ya sea el de los Apóstoles o el Niceno) es el resumen de las verdades fundamentales que creemos como católicos."
-            },
-            // 14. Sacramentos
-            {
-                question: "¿Qué sacramentos imprimen 'carácter' (una marca espiritual imborrable) y solo se pueden recibir una vez?",
-                options: ["Bautismo, Confirmación y Orden Sacerdotal", "Eucaristía, Confesión y Matrimonio", "Bautismo, Eucaristía y Unción", "Confesión y Matrimonio"],
-                correct: 0,
-                explanation: "El Bautismo, la Confirmación y el Orden Sacerdotal nos marcan para siempre como cristianos o ministros ordenados, por eso no se pueden repetir."
-            },
-            // 15. Partes de la Misa
-            {
-                question: "¿Cuál es el momento central de la Misa, cuando el pan y el vino se convierten en el Cuerpo y Sangre de Cristo?",
-                options: ["La Homilía", "El Rito de la Paz", "La Consagración", "El Padre Nuestro"],
-                correct: 2,
-                explanation: "La Consagración, dentro de la Liturgia de la Eucaristía, es el momento en que el sacerdote repite las palabras de Jesús en la Última Cena, y ocurre la Transubstanciación."
-            },
-            // 16. Dones
-            {
-                question: "¿Qué Don nos da la fuerza para ser fieles a Cristo y defender nuestra fe, incluso en momentos difíciles?",
-                options: ["Temor de Dios", "Fortaleza", "Consejo", "Sabiduría"],
-                correct: 1,
-                explanation: "El Don de la Fortaleza nos da la valentía y la constancia para no negar a Jesús, superando el miedo y las dificultades."
-            },
-            // 17. Confesión
-            {
-                question: "En la confesión, ¿qué es la 'Absolución'?",
-                options: ["La oración que reza el penitente", "El consejo que da el sacerdote", "La lista de pecados", "Las palabras del sacerdote que perdonan los pecados en nombre de Dios"],
-                correct: 3,
-                explanation: "La Absolución ('Yo te absuelvo de tus pecados...') es el momento sacramental en que Dios, a través del sacerdote, nos perdona y nos devuelve la gracia."
-            },
-            // 18. Iglesia (Ibagué)
-            {
-                question: "Según el directorio de la Arquidiócesis de Ibagué, ¿quién es el párroco de la Parroquia San Judas Tadeo?",
-                options: ["Mons. Ismael Cardona Aguirre", "P. Alfonso Bonilla Aristizábal", "Cardenal Luis José Rueda", "Mons. Orlando Roa Barbosa"],
-                correct: 0,
-                explanation: "Monseñor Ismael Cardona Aguirre figura como el párroco encargado de la comunidad de San Judas Tadeo en Ibagué."
-            },
-            // 19. Objetos Litúrgicos
-            {
-                question: "¿Cómo se llama el recipiente, similar al Cáliz pero con tapa, donde se guardan las hostias pequeñas para la Comunión?",
-                options: ["Patena", "Sagrario", "Copón", "Vinajera"],
-                correct: 2,
-                explanation: "El Copón (o Píxide) se usa para contener las hostias que se consagran para los fieles y también para reservarlas en el Sagrario."
-            },
-            // 20. Oraciones
-            {
-                question: "¿Qué oración honra a la Virgen María, recordando el saludo del Ángel Gabriel en la Anunciación?",
-                options: ["El Credo", "El Ave María", "El Acto de Contrición", "El Padre Nuestro"],
-                correct: 1,
-                explanation: "El Ave María comienza con 'Dios te salve, María, llena eres de gracia...', que son las palabras exactas del Ángel Gabriel a María."
+                text: '...el Señor es contigo. Bendita tú eres entre todas las...',
+                answer: 'mujeres'
             }
         ];
 
-        // --- 2. REFERENCIAS A ELEMENTOS DEL DOM ---
-        const startContainer = document.getElementById('start-container');
-        const gameContainer = document.getElementById('game-container');
-        const resultContainer = document.getElementById('result-container');
-        
-        const startBtn = document.getElementById('start-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const restartBtn = document.getElementById('restart-btn');
-
-        const timerDisplay = document.getElementById('timer-display');
-        const progressText = document.getElementById('progress-text');
-        
-        const questionTextEl = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-
-        // Nuevas referencias para la explicación
-        const explanationContainer = document.getElementById('explanation-container');
-        const explanationTextEl = document.getElementById('explanation-text');
-
-        const scoreTextEl = document.getElementById('score-text');
-
-        // --- 3. VARIABLES DE ESTADO DEL JUEGO ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let timer;
-        let timeLeft = 40;
-        const TIME_PER_QUESTION = 40;
-
-        // --- 4. FUNCIONES DEL JUEGO ---
-
-        /**
-         * Inicia el examen.
-         */
-        function startQuiz() {
-            startContainer.classList.add('hidden');
-            resultContainer.classList.add('hidden');
-            gameContainer.classList.remove('hidden');
-            
-            currentQuestionIndex = 0;
-            score = 0;
-            
-            // Asegurarse que el texto de progreso total esté correcto
-            document.getElementById('progress-text').innerHTML = `Pregunta <span id="question-number">1</span> de ${quizData.length}`;
-            
-            showQuestion();
+        function loadGameCompletar() {
+            gameTitle.textContent = 'Completar las Oraciones';
+            completarStep = 0;
+            renderCompletarStep();
         }
 
-        /**
-         * Muestra la pregunta actual y sus opciones.
-         */
-        function showQuestion() {
-            resetState();
-            
-            if (currentQuestionIndex >= quizData.length) {
-                showResults();
+        function renderCompletarStep() {
+            if (completarStep >= completarData.length) {
+                markGameAsComplete('completar');
                 return;
             }
+            const data = completarData[completarStep];
+            gameContent.innerHTML = `
+                <p class="text-xl text-gray-700 mb-4">${data.text}</p>
+                <input type="text" id="complete-input" class="complete-input w-full p-3 border-2 rounded-lg text-lg" placeholder="Escribe la palabra aquí...">
+                <button id="complete-check-btn" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">Revisar</button>
+            `;
+            
+            const input = document.getElementById('complete-input');
+            const button = document.getElementById('complete-check-btn');
 
-            const questionData = quizData[currentQuestionIndex];
-
-            // Actualizar texto de progreso y pregunta
-            document.getElementById('question-number').textContent = currentQuestionIndex + 1;
-            questionTextEl.textContent = questionData.question;
-
-            // Limpiar opciones anteriores y crear nuevas
-            optionsContainer.innerHTML = '';
-            questionData.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.textContent = option;
-                button.classList.add('option-btn', 'w-full', 'text-left', 'p-4', 'border-2', 'border-gray-300', 'rounded-lg', 'text-gray-700', 'font-semibold', 'bg-white', 'hover:bg-gray-50');
+            button.addEventListener('click', () => {
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = data.answer.toLowerCase();
                 
-                // Añadir evento click
-                button.addEventListener('click', () => selectAnswer(button, index === questionData.correct));
-                optionsContainer.appendChild(button);
+                if (userAnswer === correctAnswer) {
+                    input.classList.add('correct');
+                    input.disabled = true;
+                    button.disabled = true;
+                    gameMessage.innerHTML = '<span class="text-green-600">¡Correcto!</span>';
+                    completarStep++;
+                    setTimeout(renderCompletarStep, 1000); // Siguiente
+                } else {
+                    input.classList.add('incorrect');
+                    input.classList.add('shake');
+                    setTimeout(() => input.classList.remove('shake'), 500);
+                    gameMessage.innerHTML = '<span class="text-red-600">Incorrecto. ¡Inténtalo de nuevo!</span>';
+                    setTimeout(() => input.classList.remove('incorrect'), 1000);
+                }
             });
-
-            // Iniciar el temporizador
-            startTimer();
         }
 
-        /**
-         * Inicia y maneja el temporizador de 40 segundos.
-         */
-        function startTimer() {
-            timeLeft = TIME_PER_QUESTION;
-            timerDisplay.textContent = timeLeft;
-            timerDisplay.classList.remove('text-red-500'); // Quitar color de advertencia
+        // --- 8. Lógica de Juego: UNIR (Emparejar) ---
+        let selectedMatchItem = null;
+        let matchedPairs = 0;
 
-            timer = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = timeLeft;
-
-                if (timeLeft <= 10) {
-                    timerDisplay.classList.add('text-red-500'); // Advertencia de poco tiempo
-                }
-
-                if (timeLeft <= 0) {
-                    stopTimer();
-                    handleTimeUp();
-                }
-            }, 1000);
-        }
-
-        /**
-         * Detiene el temporizador.
-         */
-        function stopTimer() {
-            clearInterval(timer);
-        }
-
-        /**
-         * Resetea el estado entre preguntas.
-         */
-        function resetState() {
-            stopTimer();
-            nextBtn.classList.add('hidden'); // Ocultar botón 'Siguiente'
+        // --- 8a. Datos y Carga de "Unir Sacramentos" ---
+        function loadGameUnirSacr() {
+            gameTitle.textContent = 'Unir los Sacramentos';
+            matchedPairs = 0;
+            selectedMatchItem = null;
             
-            // Ocultar la explicación
-            explanationContainer.classList.add('hidden');
-            explanationTextEl.textContent = '';
-
-            Array.from(optionsContainer.children).forEach(button => {
-                button.disabled = false;
-                button.classList.remove('correct', 'incorrect');
-            });
-        }
-
-        /**
-         * Se ejecuta cuando un usuario selecciona una respuesta.
-         */
-        function selectAnswer(selectedButton, isCorrect) {
-            stopTimer();
+            // Datos (desordenados)
+            const colA = [
+                { id: 'a1', pair: 'b1', text: 'Bautismo' },
+                { id: 'a2', pair: 'b2', text: 'Eucaristía' },
+                { id: 'a3', pair: 'b3', text: 'Confirmación' },
+                { id: 'a4', pair: 'b4', text: 'Reconciliación' }
+            ];
+            const colB = [
+                { id: 'b1', pair: 'a1', text: 'Nos borra el pecado original y nos hace hijos de Dios.' },
+                { id: 'b2', pair: 'a2', text: 'Recibimos el Cuerpo y la Sangre de Cristo.' },
+                { id: 'b3', pair: 'a3', text: 'Nos da la fuerza del Espíritu Santo.' },
+                { id: 'b4', pair: 'a4', text: 'Dios nos perdona los pecados.' }
+            ];
             
-            // Deshabilitar todos los botones
-            Array.from(optionsContainer.children).forEach(button => {
-                button.disabled = true;
-                // Mostrar la respuesta correcta
-                if (quizData[currentQuestionIndex].correct === Array.from(optionsContainer.children).indexOf(button)) {
-                    button.classList.add('correct');
-                }
-            });
-
-            // Marcar la respuesta seleccionada
-            if (isCorrect) {
-                score++;
-                selectedButton.classList.add('correct');
-            } else {
-                selectedButton.classList.add('incorrect');
-            }
-
-            // Mostrar la explicación
-            showExplanation();
-
-            // Mostrar el botón 'Siguiente'
-            nextBtn.classList.remove('hidden');
-        }
-
-        /**
-         * Maneja el caso cuando se acaba el tiempo.
-         */
-        function handleTimeUp() {
-            timerDisplay.textContent = "0";
+            // Inyectar HTML
+            gameContent.innerHTML = `
+                <p class="text-lg text-gray-600 mb-6">Haz clic en un elemento de la izquierda y luego en su pareja de la derecha.</p>
+                <div class="flex flex-col md:flex-row justify-between">
+                    <div id="match-col-A" class="space-y-3 w-full md:w-[48%]">${colA.map(item => `<div class="match-item p-4 rounded-lg" data-id="${item.id}" data-pair="${item.pair}">${item.text}</div>`).join('')}</div>
+                    <div id="match-col-B" class="space-y-3 w-full md:w-[48%] mt-4 md:mt-0">${colB.map(item => `<div class="match-item p-4 rounded-lg" data-id="${item.id}" data-pair="${item.pair}">${item.text}</div>`).join('')}</div>
+                </div>
+            `;
             
-            // Deshabilitar todas las opciones y mostrar la correcta
-            Array.from(optionsContainer.children).forEach((button, index) => {
-                button.disabled = true;
-                if (index === quizData[currentQuestionIndex].correct) {
-                    button.classList.add('correct');
-                }
-            });
-
-            // Mostrar la explicación
-            showExplanation();
-
-            // Mostrar el botón 'Siguiente'
-            nextBtn.classList.remove('hidden');
-        }
-
-        /**
-         * Muestra la explicación de la pregunta actual.
-         */
-        function showExplanation() {
-            const explanation = quizData[currentQuestionIndex].explanation;
-            explanationTextEl.textContent = explanation;
-            explanationContainer.classList.remove('hidden');
-        }
-
-        /**
-         * Muestra la pantalla de resultados finales.
-         */
-        function showResults() {
-            gameContainer.classList.add('hidden');
-            resultContainer.classList.remove('hidden');
-            scoreTextEl.textContent = `${score} / ${quizData.length}`;
-        }
-
-        // --- 5. EVENT LISTENERS ---
-        startBtn.addEventListener('click', startQuiz);
-        nextBtn.addEventListener('click', () => {
-            currentQuestionIndex++;
-            showQuestion();
-        });
-        restartBtn.addEventListener('click', startQuiz);
-
-    </script>
-</body>
-</html>
+            // Añadir listeners
+            const items = gameContent.querySelect
