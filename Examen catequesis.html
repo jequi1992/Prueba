@@ -76,6 +76,12 @@
                 <!-- Las opciones se generarán con JS aquí -->
             </div>
 
+            <!-- NUEVO: Contenedor de Explicación (Oculto) -->
+            <div id="explanation-container" class="hidden mt-6 p-4 bg-gray-100 rounded-lg border border-gray-300">
+                <h3 class="font-bold text-lg text-gray-800 mb-2">Explicación:</h3>
+                <p id="explanation-text" class="text-gray-700"></p>
+            </div>
+
             <!-- Botón de Siguiente (Oculto hasta responder) -->
             <div class="mt-8 text-right">
                 <button id="next-btn" class="hidden bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-10 rounded-lg text-lg transition duration-300">
@@ -98,127 +104,147 @@
     </div>
 
     <script>
-        // --- 1. DATOS DEL EXAMEN (20 Preguntas) ---
+        // --- 1. DATOS DEL EXAMEN (Nuevas 20 Preguntas + Explicación) ---
         const quizData = [
-            // Sacramentos (General)
+            // 1. Sacramentos
             {
-                question: "¿Cuántos sacramentos hay en la Iglesia Católica?",
-                options: ["Tres", "Cinco", "Siete", "Diez"],
-                correct: 2
+                question: "¿Qué sacramento es considerado la 'puerta de entrada' a todos los demás sacramentos?",
+                options: ["Eucaristía", "Confirmación", "Bautismo", "Matrimonio"],
+                correct: 2,
+                explanation: "El Bautismo es el primer sacramento; nos limpia del pecado original, nos hace hijos de Dios y miembros de la Iglesia. Sin él, no podemos recibir los demás."
             },
-            // Confesión - Paso 1
+            // 2. Confesión
             {
-                question: "¿Cuál es el *primer* paso para una buena confesión?",
-                options: ["Decir los pecados al sacerdote", "Examen de conciencia", "Cumplir la penitencia", "Propósito de enmienda"],
-                correct: 1
+                question: "En la confesión, ¿qué significa el 'Propósito de enmienda' (tercer paso)?",
+                options: ["Recordar los pecados", "Sentir tristeza por los pecados", "La firme decisión de no volver a pecar", "Rezar la penitencia"],
+                correct: 2,
+                explanation: "Es la decisión firme y sincera de evitar el pecado y las ocasiones de pecar. No es solo sentir tristeza (contrición), sino decidir cambiar."
             },
-            // Eucaristía
+            // 3. Dones
             {
-                question: "¿Qué es la Eucaristía?",
-                options: ["Un pan bendecido", "El Cuerpo y la Sangre de Cristo", "Un recuerdo de la Navidad", "Una canción"],
-                correct: 1
+                question: "¿Qué Don del Espíritu Santo nos ayuda a ver y juzgar todas las cosas desde la perspectiva de Dios?",
+                options: ["Fortaleza", "Sabiduría", "Ciencia", "Piedad"],
+                correct: 1,
+                explanation: "La Sabiduría es el don que nos permite 'saborear' las cosas de Dios y ver el mundo con sus ojos, dándole el verdadero valor a todo."
             },
-            // Oraciones
+            // 4. Objetos Litúrgicos
             {
-                question: "¿Quién nos enseñó a rezar el Padre Nuestro?",
-                options: ["La Virgen María", "Moisés", "El Papa", "Jesucristo"],
-                correct: 3
+                question: "¿Qué es el Sagrario o Tabernáculo?",
+                options: ["El libro con las lecturas", "La mesa donde se consagra", "La silla del sacerdote", "El lugar donde se reserva la Eucaristía"],
+                correct: 3,
+                explanation: "El Sagrario es la 'casita' especial donde se guardan las hostias consagradas (Cristo presente) después de la Misa, para adoración y para llevarla a los enfermos."
             },
-            // Partes de la Misa
+            // 5. Oraciones
             {
-                question: "¿Cuáles son las dos partes *principales* de la Misa?",
-                options: ["La Homilía y el Credo", "Liturgia de la Palabra y Liturgia de la Eucaristía", "Las Ofrendas y la Comunión", "Ritos Iniciales y Rito de Conclusión"],
-                correct: 1
+                question: "¿Qué oración, enseñada por Jesús mismo, es considerada el resumen de todo el Evangelio?",
+                options: ["El Credo", "El Ave María", "El Padre Nuestro", "La Salve"],
+                correct: 2,
+                explanation: "El Padre Nuestro es la oración que Jesús nos enseñó. En ella le llamamos 'Padre' y pedimos por el Reino, el pan, el perdón y la liberación del mal."
             },
-            // Objetos Litúrgicos
+            // 6. Partes de la Misa
             {
-                question: "¿Cómo se llama la copa (generalmente dorada) donde se consagra el vino?",
-                options: ["Patena", "Cáliz", "Copón", "Leccionario"],
-                correct: 1
+                question: "¿En qué parte de la Misa el sacerdote o diácono explica las lecturas de la Biblia?",
+                options: ["En la Homilía", "En el ofertorio", "En la consagración", "En el Acto Penitencial"],
+                correct: 0,
+                explanation: "La Homilía es la explicación que da el sacerdote después del Evangelio, ayudándonos a entender y aplicar la Palabra de Dios en nuestra vida diaria."
             },
-            // Dones del Espíritu Santo
+            // 7. Sacramentos
             {
-                question: "¿Cuántos son los Dones del Espíritu Santo?",
-                options: ["Tres (como la Trinidad)", "Doce (como los apóstoles)", "Siete", "Diez (como los mandamientos)"],
-                correct: 2
+                question: "¿Qué sacramento nos da la fuerza especial del Espíritu Santo para ser testigos de Cristo, completando la gracia del Bautismo?",
+                options: ["Orden Sacerdotal", "Unción de los Enfermos", "Confirmación", "Reconciliación"],
+                correct: 2,
+                explanation: "La Confirmación nos fortalece con los dones del Espíritu Santo, haciéndonos 'soldados' y testigos de Cristo en el mundo."
             },
-            // Confesión - Paso 3
+            // 8. Objetos Litúrgicos
             {
-                question: "El segundo paso es el 'Dolor de los pecados'. ¿Cuál es el *tercer* paso?",
-                options: ["Propósito de enmienda", "Examen de conciencia", "Cumplir la penitencia", "Decir los pecados"],
-                correct: 0
+                question: "¿Cómo se llama el lugar elevado (atril) desde donde se proclama la Palabra de Dios (lecturas y Evangelio)?",
+                options: ["Altar", "Sede", "Ambón", "Sagrario"],
+                correct: 2,
+                explanation: "El Ambón es el lugar dedicado a la proclamación de la Palabra de Dios. Es distinto del Altar, que es la mesa de la Eucaristía."
             },
-            // Sacramentos (Iniciación)
+            // 9. Confesión
             {
-                question: "¿Cuáles son los 3 sacramentos de la Iniciación Cristiana?",
-                options: ["Bautismo, Matrimonio y Unción", "Bautismo, Confirmación y Eucaristía", "Confesión, Eucaristía y Matrimonio", "Bautismo, Confirmación y Orden Sacerdotal"],
-                correct: 1
+                question: "¿En qué momento de la confesión se suele rezar el 'Acto de Contrición' o 'Señor mío, Jesucristo'?",
+                options: ["Antes de entrar, como examen", "Después de decir los pecados y antes de la absolución", "Al final, como penitencia", "Al llegar a casa"],
+                correct: 1,
+                explanation: "El Acto de Contrición se reza para expresar nuestro dolor y arrepentimiento, justo después de confesar los pecados y antes de que el sacerdote nos dé la absolución."
             },
-            // Iglesia (Colombia)
+            // 10. Iglesia (Colombia)
             {
-                question: "Según los registros actuales, ¿quién es el Arzobispo de Bogotá y Primado de Colombia?",
-                options: ["Mons. Rubén Salazar Gómez", "Cardenal Luis José Rueda Aparicio", "Mons. Orlando Roa Barbosa", "Papa Francisco"],
-                correct: 1
+                question: "¿Quién es el actual Arzobispo de Bogotá y Cardenal Primado de Colombia?",
+                options: ["Cardenal Luis José Rueda Aparicio", "Mons. Rubén Salazar Gómez", "Cardenal Pedro Rubiano Sáenz", "Mons. Orlando Roa Barbosa"],
+                correct: 0,
+                explanation: "El Cardenal Luis José Rueda Aparicio es la máxima autoridad de la Arquidiócesis de Bogotá y ostenta el título honorífico de 'Primado de Colombia'."
             },
-            // Objetos Litúrgicos
+            // 11. Dones
             {
-                question: "¿Dónde se guardan las hostias consagradas (la Eucaristía) después de la Misa?",
-                options: ["En la Sacristía", "En el Ambón", "En el Sagrario (o Tabernáculo)", "En el Altar"],
-                correct: 2
+                question: "¿Qué Don del Espíritu Santo nos ayuda a comprender más profundamente las verdades de nuestra fe (la Biblia, la catequesis)?",
+                options: ["Ciencia", "Entendimiento", "Piedad", "Fortaleza"],
+                correct: 1,
+                explanation: "El Don de Entendimiento nos ilumina por dentro para comprender lo que Dios nos revela, yendo más allá de una simple lectura."
             },
-            // Oraciones
+            // 12. Objetos Litúrgicos
             {
-                question: "¿Cómo comienza la oración que le rezamos a nuestra Madre del cielo, el Ave María?",
-                options: ["Dios te salve, María, llena eres de gracia...", "Madre nuestra, que estás en el cielo...", "Santa María, Madre de Dios...", "Virgen María, ruega por nosotros..."],
-                correct: 0
+                question: "¿Qué son las 'Vinajeras' que se usan en la Misa?",
+                options: ["Los libros de cantos", "Las velas del altar", "Pequeñas jarras que contienen el vino y el agua", "El incienso"],
+                correct: 2,
+                explanation: "Son dos pequeñas jarras. Una contiene el vino y la otra el agua que se usarán en la consagración (el sacerdote mezcla un poco de agua con el vino)."
             },
-            // Dones del Espíritu Santo
+            // 13. Oraciones
             {
-                question: "¿Cuál de los siguientes *NO* es uno de los 7 Dones del Espíritu Santo?",
-                options: ["Sabiduría", "Caridad", "Consejo", "Temor de Dios"],
-                correct: 1 // La Caridad es una Virtud Teologal
+                question: "¿Qué oración es la profesión de nuestra fe, donde afirmamos 'Creo en un solo Dios, Padre Todopoderoso...'?",
+                options: ["El Acto de Contrición", "La Salve", "El Gloria", "El Credo"],
+                correct: 3,
+                explanation: "El Credo (ya sea el de los Apóstoles o el Niceno) es el resumen de las verdades fundamentales que creemos como católicos."
             },
-            // Eucaristía
+            // 14. Sacramentos
             {
-                question: "¿En qué momento instituyó Jesús la Eucaristía?",
-                options: ["En su Bautismo", "En el Sermón de la Montaña", "En la Última Cena", "Después de resucitar"],
-                correct: 2
+                question: "¿Qué sacramentos imprimen 'carácter' (una marca espiritual imborrable) y solo se pueden recibir una vez?",
+                options: ["Bautismo, Confirmación y Orden Sacerdotal", "Eucaristía, Confesión y Matrimonio", "Bautismo, Eucaristía y Unción", "Confesión y Matrimonio"],
+                correct: 0,
+                explanation: "El Bautismo, la Confirmación y el Orden Sacerdotal nos marcan para siempre como cristianos o ministros ordenados, por eso no se pueden repetir."
             },
-            // Confesión (Oración)
+            // 15. Partes de la Misa
             {
-                question: "¿Cómo se llama la oración que rezamos para mostrar nuestro arrepentimiento en la confesión (Ej: '...pésame de todo corazón...')?",
-                options: ["Gloria", "Salve", "Acto de Contrición", "Credo"],
-                correct: 2
+                question: "¿Cuál es el momento central de la Misa, cuando el pan y el vino se convierten en el Cuerpo y Sangre de Cristo?",
+                options: ["La Homilía", "El Rito de la Paz", "La Consagración", "El Padre Nuestro"],
+                correct: 2,
+                explanation: "La Consagración, dentro de la Liturgia de la Eucaristía, es el momento en que el sacerdote repite las palabras de Jesús en la Última Cena, y ocurre la Transubstanciación."
             },
-            // Objetos Litúrgicos
+            // 16. Dones
             {
-                question: "¿Cómo se llama el plato pequeño, usualmente dorado, donde se pone la Hostia grande que el sacerdote consagra?",
-                options: ["Patena", "Cáliz", "Vinajera", "Incensario"],
-                correct: 0
+                question: "¿Qué Don nos da la fuerza para ser fieles a Cristo y defender nuestra fe, incluso en momentos difíciles?",
+                options: ["Temor de Dios", "Fortaleza", "Consejo", "Sabiduría"],
+                correct: 1,
+                explanation: "El Don de la Fortaleza nos da la valentía y la constancia para no negar a Jesús, superando el miedo y las dificultades."
             },
-            // Iglesia (Ibagué)
+            // 17. Confesión
             {
-                question: "Según la lista de la Arquidiócesis de Ibagué, ¿quién es el párroco de la Iglesia de San Judas Tadeo en la ciudad?",
-                options: ["P. Alfonso Bonilla Aristizábal", "Mons. Ismael Cardona Aguirre", "Mons. Gustavo Vásquez Montoya", "Mons. Orlando Roa Barbosa"],
-                correct: 1
+                question: "En la confesión, ¿qué es la 'Absolución'?",
+                options: ["La oración que reza el penitente", "El consejo que da el sacerdote", "La lista de pecados", "Las palabras del sacerdote que perdonan los pecados en nombre de Dios"],
+                correct: 3,
+                explanation: "La Absolución ('Yo te absuelvo de tus pecados...') es el momento sacramental en que Dios, a través del sacerdote, nos perdona y nos devuelve la gracia."
             },
-            // Partes de la Misa
+            // 18. Iglesia (Ibagué)
             {
-                question: "¿Cómo se llama el lugar elevado desde donde se proclaman las lecturas de la Biblia?",
-                options: ["Altar", "Sede", "Sacristía", "Ambón"],
-                correct: 3
+                question: "Según el directorio de la Arquidiócesis de Ibagué, ¿quién es el párroco de la Parroquia San Judas Tadeo?",
+                options: ["Mons. Ismael Cardona Aguirre", "P. Alfonso Bonilla Aristizábal", "Cardenal Luis José Rueda", "Mons. Orlando Roa Barbosa"],
+                correct: 0,
+                explanation: "Monseñor Ismael Cardona Aguirre figura como el párroco encargado de la comunidad de San Judas Tadeo en Ibagué."
             },
-            // Confesión - Paso 5
+            // 19. Objetos Litúrgicos
             {
-                question: "¿Cuál es el *último* paso (el 5to) para completar una buena confesión?",
-                options: ["Cumplir la penitencia", "Dar gracias a Dios", "Hacer examen de conciencia", "Pedir la absolución"],
-                correct: 0
+                question: "¿Cómo se llama el recipiente, similar al Cáliz pero con tapa, donde se guardan las hostias pequeñas para la Comunión?",
+                options: ["Patena", "Sagrario", "Copón", "Vinajera"],
+                correct: 2,
+                explanation: "El Copón (o Píxide) se usa para contener las hostias que se consagran para los fieles y también para reservarlas en el Sagrario."
             },
-            // Oraciones
+            // 20. Oraciones
             {
-                question: "'Creo en Dios, Padre Todopoderoso, Creador del cielo y de la tierra...' es el comienzo de:",
-                options: ["El Padre Nuestro", "El Acto de Contrición", "El Credo", "El Salmo 23"],
-                correct: 2
+                question: "¿Qué oración honra a la Virgen María, recordando el saludo del Ángel Gabriel en la Anunciación?",
+                options: ["El Credo", "El Ave María", "El Acto de Contrición", "El Padre Nuestro"],
+                correct: 1,
+                explanation: "El Ave María comienza con 'Dios te salve, María, llena eres de gracia...', que son las palabras exactas del Ángel Gabriel a María."
             }
         ];
 
@@ -233,10 +259,13 @@
 
         const timerDisplay = document.getElementById('timer-display');
         const progressText = document.getElementById('progress-text');
-        const questionNumberEl = document.getElementById('question-number');
         
         const questionTextEl = document.getElementById('question-text');
         const optionsContainer = document.getElementById('options-container');
+
+        // Nuevas referencias para la explicación
+        const explanationContainer = document.getElementById('explanation-container');
+        const explanationTextEl = document.getElementById('explanation-text');
 
         const scoreTextEl = document.getElementById('score-text');
 
@@ -335,6 +364,11 @@
         function resetState() {
             stopTimer();
             nextBtn.classList.add('hidden'); // Ocultar botón 'Siguiente'
+            
+            // Ocultar la explicación
+            explanationContainer.classList.add('hidden');
+            explanationTextEl.textContent = '';
+
             Array.from(optionsContainer.children).forEach(button => {
                 button.disabled = false;
                 button.classList.remove('correct', 'incorrect');
@@ -364,6 +398,9 @@
                 selectedButton.classList.add('incorrect');
             }
 
+            // Mostrar la explicación
+            showExplanation();
+
             // Mostrar el botón 'Siguiente'
             nextBtn.classList.remove('hidden');
         }
@@ -382,8 +419,20 @@
                 }
             });
 
+            // Mostrar la explicación
+            showExplanation();
+
             // Mostrar el botón 'Siguiente'
             nextBtn.classList.remove('hidden');
+        }
+
+        /**
+         * Muestra la explicación de la pregunta actual.
+         */
+        function showExplanation() {
+            const explanation = quizData[currentQuestionIndex].explanation;
+            explanationTextEl.textContent = explanation;
+            explanationContainer.classList.remove('hidden');
         }
 
         /**
