@@ -117,7 +117,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <!-- Tarjeta 1: Armar -->
-                <div id="card-armar" class="game-card data-game-id="armar" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                <div id="card-armar" class="game-card" data-game-id="armar" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer>
                     <div class="flex items-center">
                         <span class="text-3xl mr-4">&#128221;</span> <!-- Icono de 'ordenar' -->
                         <div>
@@ -129,7 +129,7 @@
                 </div>
                 
                 <!-- Tarjeta 2: Completar -->
-                <div id="card-completar" class="game-card data-game-id="completar" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                <div id="card-completar" class="game-card" data-game-id="completar" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer>
                     <div class="flex items-center">
                         <span class="text-3xl mr-4">&#9999;&#65039;</span> <!-- Icono de 'escribir' -->
                         <div>
@@ -141,7 +141,7 @@
                 </div>
 
                 <!-- Tarjeta 3: Unir Sacramentos -->
-                <div id="card-unir-sacr" class="game-card data-game-id="unir-sacr" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                <div id="card-unir-sacr" class="game-card" data-game-id="unir-sacr" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer>
                     <div class="flex items-center">
                         <span class="text-3xl mr-4">&#128279;</span> <!-- Icono de 'unir' -->
                         <div>
@@ -153,7 +153,7 @@
                 </div>
 
                 <!-- Tarjeta 4: Unir Misa -->
-                <div id="card-unir-misa" class="game-card data-game-id="unir-misa" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer">
+                <div id="card-unir-misa" class="game-card" data-game-id="unir-misa" bg-white p-6 rounded-2xl shadow-lg border-4 border-white cursor-pointer>
                     <div class="flex items-center">
                         <span class="text-3xl mr-4">&#128279;</span> <!-- Icono de 'unir' -->
                         <div>
@@ -433,4 +433,95 @@
             `;
             
             // Añadir listeners
-            const items = gameContent.querySelect
+            const items = gameContent.querySelectorAll('.match-item');
+            items.forEach(item => item.addEventListener('click', (e) => handleUnirClick(e, items, colA.length, 'unir-sacr')));
+        }
+        
+        // --- 8b. Datos y Carga de "Unir Misa y Clero" ---
+        function loadGameUnirMisa() {
+            gameTitle.textContent = 'El Tesoro de la Misa';
+            matchedPairs = 0;
+            selectedMatchItem = null;
+            
+            const colA = [
+                { id: 'a1', pair: 'b1', text: 'Cáliz' },
+                { id: 'a2', pair: 'b2', text: 'Sagrario' },
+                { id: 'a3', pair: 'b3', text: 'Arzobispo de Bogotá (Primado de Colombia)' },
+                { id: 'a4', pair: 'b4', text: 'Párroco de San Judas Tadeo (Ibagué)' },
+                { id: 'a5', pair: 'b5', text: 'Ambón' }
+            ];
+            const colB = [
+                { id: 'b1', pair: 'a1', text: 'La copa donde se consagra el vino.' },
+                { id: 'b2', pair: 'a2', text: 'Lugar donde se guarda la Eucaristía.' },
+                { id: 'b3', pair: 'a3', text: 'Cardenal Luis José Rueda Aparicio' },
+                { id: 'b4', pair: 'a4', text: 'Mons. Ismael Cardona Aguirre' },
+                { id: 'b5', pair: 'a5', text: 'Lugar desde donde se lee la Palabra de Dios.' }
+            ];
+            
+            // Inyectar HTML
+            gameContent.innerHTML = `
+                <p class="text-lg text-gray-600 mb-6">Haz clic en un elemento de la izquierda y luego en su pareja de la derecha.</p>
+                <div class="flex flex-col md:flex-row justify-between">
+                    <div id="match-col-A" class="space-y-3 w-full md:w-[48%]">${colA.map(item => `<div class="match-item p-4 rounded-lg" data-id="${item.id}" data-pair="${item.pair}">${item.text}</div>`).join('')}</div>
+                    <div id="match-col-B" class="space-y-3 w-full md:w-[48%] mt-4 md:mt-0">${colB.map(item => `<div class="match-item p-4 rounded-lg" data-id="${item.id}" data-pair="${item.pair}">${item.text}</div>`).join('')}</div>
+                </div>
+            `;
+            
+            // Añadir listeners
+            const items = gameContent.querySelectorAll('.match-item');
+            items.forEach(item => item.addEventListener('click', (e) => handleUnirClick(e, items, colA.length, 'unir-misa')));
+        }
+
+        // --- 8c. Lógica General de "Unir" ---
+        function handleUnirClick(e, allItems, totalPairs, gameId) {
+            const clickedItem = e.currentTarget;
+            if (clickedItem.classList.contains('matched')) return;
+
+            if (!selectedMatchItem) {
+                // Primer clic
+                clickedItem.classList.add('selected');
+                selectedMatchItem = clickedItem;
+            } else {
+                // Segundo clic
+                if (clickedItem === selectedMatchItem) {
+                    // Clic en el mismo item: deseleccionar
+                    clickedItem.classList.remove('selected');
+                    selectedMatchItem = null;
+                    return;
+                }
+
+                // Verificar si son pareja
+                const pairId = selectedMatchItem.dataset.pair;
+                const clickedId = clickedItem.dataset.id;
+
+                if (pairId === clickedId) {
+                    // ¡Es una pareja!
+                    selectedMatchItem.classList.add('matched');
+                    clickedItem.classList.add('matched');
+                    selectedMatchItem.classList.remove('selected');
+                    matchedPairs++;
+                    selectedMatchItem = null;
+                    gameMessage.innerHTML = '<span class="text-green-600">¡Correcto!</span>';
+
+                    if (matchedPairs === totalPairs) {
+                        markGameAsComplete(gameId);
+                    }
+                } else {
+                    // No son pareja
+                    gameMessage.innerHTML = '<span class="text-red-600">No es la pareja correcta.</span>';
+                    selectedMatchItem.classList.add('shake');
+                    clickedItem.classList.add('shake');
+                    
+                    selectedMatchItem.classList.remove('selected');
+                    selectedMatchItem = null;
+                    
+                    setTimeout(() => {
+                        allItems.forEach(item => item.classList.remove('shake'));
+                        gameMessage.innerHTML = '';
+                    }, 600);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
