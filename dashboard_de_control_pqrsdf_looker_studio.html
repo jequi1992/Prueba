@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Looker Studio - Control de PQRSDF (FOR-CSC-007)</title>
+  
+  <!-- Tailwind CSS para un diseño premium -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js para gráficos dinámicos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Lucide Icons para iconografía moderna -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+  <!-- TOP BRANDING BAR (Estilo Looker Studio) -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center space-x-3">
+      <div class="bg-blue-600 text-white p-2 rounded-lg shadow-sm">
+        <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">FOR-CSC-007</span>
+          <span class="text-xs text-slate-400">v2.0</span>
+        </div>
+        <h1 class="text-lg font-bold text-slate-900">Seguimiento y Control de PQRSDF - Secretaría de la Mujer y Equidad de Género</h1>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-3">
+      <button onclick="openAddModal()" class="flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow-sm transition-all">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Radicar PQRSDF</span>
+      </button>
+      <button onclick="exportToCSV()" class="flex items-center space-x-1.5 border border-slate-300 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-lg text-sm font-medium transition-all">
+        <i data-lucide="download" class="w-4 h-4"></i>
+        <span>Exportar Datos</span>
+      </button>
+      <div class="h-6 w-px bg-slate-200"></div>
+      <div class="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+        <button class="bg-white text-slate-800 font-medium text-xs px-3 py-1.5 rounded shadow-sm flex items-center space-x-1">
+          <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-600"></i>
+          <span>Vista</span>
+        </button>
+        <button onclick="alert('Modo edición deshabilitado en este reporte público.')" class="text-slate-500 hover:text-slate-800 text-xs px-3 py-1.5 rounded flex items-center space-x-1">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>Editar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-[1600px] mx-auto p-6 space-y-6">
+
+    <!-- ZONA A: FILTROS DINÁMICOS (CONTROL PANEL) -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+        <div class="flex items-center space-x-2 text-slate-600">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-blue-500"></i>
+          <span class="text-sm font-semibold uppercase tracking-wider">Controles y Filtros Dinámicos</span>
+        </div>
+        <button onclick="resetFilters()" class="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1">
+          <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+          <span>Restablecer Filtros</span>
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Rango de Fechas -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Rango de Radicación</label>
+          <div class="flex items-center space-x-2">
+            <input type="date" id="filter-date-start" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <span class="text-xs text-slate-400">a</span>
+            <input type="date" id="filter-date-end" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          </div>
+        </div>
+
+        <!-- Filtro Canal -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Canal de Entrada</label>
+          <select id="filter-canal" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <option value="">Todos los canales</option>
+            <option value="PÁGINA WEB">Página Web</option>
+            <option value="VENTANILLA">Ventanilla</option>
+            <option value="CORREO CORRESPONDENCIA">Correo Correspondencia</option>
+            <option value="LÍNEA TELEFÓNICA">Línea Telefónica</option>
+          </select>
+        </div>
+
+        <!-- Filtro Tipo Requerimiento -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tipo de Requerimiento</label>
+          <select id="filter-tipo" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <option value="">Todos los tipos</option>
+            <option value="PETICIÓN">Petición</option>
+            <option value="QUEJA">Queja</option>
+            <option value="RECLAMO">Reclamo</option>
+            <option value="SUGERENCIA">Sugerencia</option>
+            <option value="DENUNCIA">Denuncia</option>
+            <option value="FELICITACIÓN">Felicitación</option>
+          </select>
+        </div>
+
+        <!-- Filtro Dependencia -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Dependencia Asignada</label>
+          <select id="filter-dependencia" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <option value="">Todas las dependencias</option>
+            <option value="Jurídica">Jurídica</option>
+            <option value="Secretaría de la Mujer y Equidad de Género">Secretaría de la Mujer</option>
+            <option value="Secretaría de Desarrollo Social">Desarrollo Social</option>
+            <option value="Secretaría de Gobierno">Secretaría de Gobierno</option>
+            <option value="Secretaría de Salud">Secretaría de Salud</option>
+            <option value="Secretaría de Infraestructura y Desarrollo Físico">Infraestructura</option>
+            <option value="Secretaría de Educación y Cultura">Educación y Cultura</option>
+          </select>
+        </div>
+
+        <!-- Filtro Estado -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Estado de Gestión</label>
+          <select id="filter-estado" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <option value="">Todos los estados</option>
+            <option value="Cerrado con solución">Cerrado con Solución</option>
+            <option value="En trámite">En Trámite</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZONA B: KPI SUMMARY CARDS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Tarjeta 1: Total Radicados -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+        <div class="space-y-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Radicados</span>
+          <div class="text-3xl font-extrabold text-slate-950" id="kpi-total">0</div>
+          <span class="text-[11px] text-slate-400">PQRSDF totales registradas</span>
+        </div>
+        <div class="bg-blue-50 p-3 rounded-xl text-blue-600">
+          <i data-lucide="folder-open" class="w-7 h-7"></i>
+        </div>
+      </div>
+
+      <!-- Tarjeta 2: Abiertos (En trámite) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+        <div class="space-y-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">En Trámite (Abiertos)</span>
+          <div class="text-3xl font-extrabold text-amber-600" id="kpi-tramite">0</div>
+          <span class="text-[11px] text-amber-600/80 font-medium" id="kpi-tramite-pct">0% del total general</span>
+        </div>
+        <div class="bg-amber-50 p-3 rounded-xl text-amber-600">
+          <i data-lucide="clock" class="w-7 h-7"></i>
+        </div>
+      </div>
+
+      <!-- Tarjeta 3: Cerrados -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+        <div class="space-y-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Casos Resueltos</span>
+          <div class="text-3xl font-extrabold text-emerald-600" id="kpi-resueltos">0</div>
+          <span class="text-[11px] text-emerald-600/80 font-medium" id="kpi-resueltos-pct">0% del total general</span>
+        </div>
+        <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600">
+          <i data-lucide="check-circle" class="w-7 h-7"></i>
+        </div>
+      </div>
+
+      <!-- Tarjeta 4: % de Oportunidad (ANS) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+        <div class="space-y-1">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Oportunidad (ANS)</span>
+          <div class="text-3xl font-extrabold text-blue-700" id="kpi-ans">0%</div>
+          <span class="text-[11px] text-slate-400">Cerrados dentro del tiempo legal</span>
+        </div>
+        <div class="bg-indigo-50 p-3 rounded-xl text-indigo-600">
+          <i data-lucide="shield-check" class="w-7 h-7"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZONA C: GRÁFICAS DE DISTRIBUCIÓN Y ANÁLISIS -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Grafico 1: Evolución Temporal de Radicados -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="trending-up" class="w-4 h-4 text-blue-500"></i>
+            <span>Histórico Mensual de Radicación</span>
+          </h3>
+          <span class="text-xs text-slate-400">Total casos por mes</span>
+        </div>
+        <div class="h-[280px]">
+          <canvas id="chart-historico"></canvas>
+        </div>
+      </div>
+
+      <!-- Grafico 2: Tipo de Requerimiento (Dona) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-500"></i>
+            <span>Tipos de Requerimientos</span>
+          </h3>
+          <span class="text-xs text-slate-400">Distribución de Solicitudes</span>
+        </div>
+        <div class="h-[280px] flex items-center justify-center">
+          <canvas id="chart-tipo"></canvas>
+        </div>
+      </div>
+
+      <!-- Grafico 3: PQRSDF por Dependencia (Barras Horizontales) -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="building-2" class="w-4 h-4 text-indigo-500"></i>
+            <span>PQRSDF por Oficina o Secretaría</span>
+          </h3>
+          <span class="text-xs text-slate-400">Distribución de carga laboral</span>
+        </div>
+        <div class="h-[280px]">
+          <canvas id="chart-dependencias"></canvas>
+        </div>
+      </div>
+
+      <!-- Grafico 4: Participación de Canales de Entrada -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="share-2" class="w-4 h-4 text-amber-500"></i>
+            <span>Canales de Entrada</span>
+          </h3>
+          <span class="text-xs text-slate-400">% de radicación</span>
+        </div>
+        <div class="h-[280px] flex items-center justify-center">
+          <canvas id="chart-canales"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZONA D: TABLA DETALLADA DE REGISTROS -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <!-- Tabla Header -->
+      <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="space-y-1">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="table-properties" class="w-4 h-4 text-blue-500"></i>
+            <span>Bandeja de Control de PQRSDF (Registros FOR-CSC-007)</span>
+          </h3>
+          <p class="text-xs text-slate-500">Listado interactivo de PQRSDF con semáforo de vencimientos (ANS)</p>
+        </div>
+        
+        <!-- Buscador y Acciones -->
+        <div class="flex items-center space-x-3 max-w-md w-full md:w-auto">
+          <div class="relative w-full md:w-72">
+            <input type="text" id="table-search" oninput="applyFilters()" placeholder="Buscar radicado, nombre o asunto..." class="w-full text-xs border border-slate-300 rounded-lg pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenedor Tabla -->
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <th class="py-3 px-4">N° Radicado</th>
+              <th class="py-3 px-4">F. Radicación</th>
+              <th class="py-3 px-4">Canal</th>
+              <th class="py-3 px-4">Tipo</th>
+              <th class="py-3 px-4">Peticionario / Identificación</th>
+              <th class="py-3 px-4">Asunto</th>
+              <th class="py-3 px-4">Dependencia / Responsable</th>
+              <th class="py-3 px-4">Alerta Vencimiento</th>
+              <th class="py-3 px-4">Estado</th>
+              <th class="py-3 px-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-slate-100 text-xs">
+            <!-- Cargado Dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tabla Footer / Paginación -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <div>
+          Mostrando <span id="table-showing-start" class="font-semibold text-slate-800">0</span> a <span id="table-showing-end" class="font-semibold text-slate-800">0</span> de <span id="table-showing-total" class="font-semibold text-slate-800">0</span> radicados filtrados
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="changePage(-1)" id="btn-prev" class="px-2.5 py-1.5 rounded border border-slate-300 bg-white hover:bg-slate-100 transition-all text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
+          <span id="table-page-number" class="font-medium text-slate-700">Página 1</span>
+          <button onclick="changePage(1)" id="btn-next" class="px-2.5 py-1.5 rounded border border-slate-300 bg-white hover:bg-slate-100 transition-all text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed">Siguiente</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: DETALLES DE RADICADO -->
+  <div id="detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+          <i data-lucide="file-text" class="text-blue-500 w-5 h-5"></i>
+          <span>Detalle de Radicado <span id="modal-rad-id" class="text-blue-600"></span></span>
+        </h3>
+        <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 text-xs">
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Fecha de Radicación</span>
+          <span id="modal-rad-fecha" class="font-medium text-slate-800">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Canal de Entrada</span>
+          <span id="modal-rad-canal" class="font-medium text-slate-800">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Tipo Requerimiento</span>
+          <span id="modal-rad-tipo" class="font-medium text-slate-800">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Peticionario</span>
+          <span id="modal-rad-nombre" class="font-medium text-slate-800">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Identificación</span>
+          <span id="modal-rad-cedula" class="font-medium text-slate-800">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Email & Teléfono</span>
+          <span id="modal-rad-contacto" class="font-medium text-slate-800">-</span>
+        </div>
+        <div class="col-span-2">
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Asunto principal</span>
+          <span id="modal-rad-asunto" class="font-medium text-slate-800">-</span>
+        </div>
+        <div class="border-t border-slate-100 col-span-2 my-2"></div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Fecha de Vencimiento Legal</span>
+          <span id="modal-rad-vence" class="font-medium text-red-600">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Días hábiles restantes</span>
+          <span id="modal-rad-restantes" class="font-medium text-slate-800">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Oficina Asignada</span>
+          <span id="modal-rad-direcciona" class="font-medium text-indigo-700">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Responsable de Gestión</span>
+          <span id="modal-rad-responsable" class="font-medium text-slate-800">-</span>
+        </div>
+        <div class="col-span-2">
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Respuesta Brindada</span>
+          <p id="modal-rad-respuesta" class="font-normal text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-100 leading-relaxed">-</p>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Fecha de Respuesta</span>
+          <span id="modal-rad-fresp" class="font-medium text-emerald-600">-</span>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">Estado Actual</span>
+          <span id="modal-rad-estado" class="font-semibold text-slate-800">-</span>
+        </div>
+      </div>
+      
+      <div class="flex justify-end pt-2 border-t border-slate-100">
+        <button onclick="closeDetailModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-semibold">Cerrar Detalle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AÑADIR NUEVO RADICADO (SIMULACIÓN DE ENTRADA) -->
+  <div id="add-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+          <i data-lucide="plus-circle" class="text-blue-600 w-5 h-5"></i>
+          <span>Nuevo Radicado de Entrada (FOR-CSC-007)</span>
+        </h3>
+        <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="add-form" onsubmit="submitForm(event)" class="grid grid-cols-2 gap-4 text-xs">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Fecha Radicación *</label>
+          <input type="date" id="form-fecha-rad" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Canal de Entrada *</label>
+          <select id="form-canal" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="PÁGINA WEB">Página Web</option>
+            <option value="VENTANILLA">Ventanilla</option>
+            <option value="CORREO CORRESPONDENCIA">Correo Correspondencia</option>
+            <option value="LÍNEA TELEFÓNICA">Línea Telefónica</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tipo de Requerimiento *</label>
+          <select id="form-tipo" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="PETICIÓN">Petición</option>
+            <option value="QUEJA">Queja</option>
+            <option value="RECLAMO">Reclamo</option>
+            <option value="SUGERENCIA">Sugerencia</option>
+            <option value="DENUNCIA">Denuncia</option>
+            <option value="FELICITACIÓN">Felicitación</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombres y Apellidos *</label>
+          <input type="text" id="form-nombre" required placeholder="Nombre del peticionario" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Cédula / Identificación *</label>
+          <input type="number" id="form-identificacion" required placeholder="Número" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Correo Electrónico *</label>
+          <input type="email" id="form-email" required placeholder="correo@ejemplo.com" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Teléfono</label>
+          <input type="number" id="form-telefono" placeholder="Número de celular" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Anexos ?</label>
+          <select id="form-anexos" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="NO">No</option>
+            <option value="SI">Sí</option>
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Asunto de Solicitud *</label>
+          <textarea id="form-asunto" required rows="2" placeholder="Describa el requerimiento o inconformidad..." class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Direcciona a (Secretaría) *</label>
+          <select id="form-direcciona" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="Jurídica">Jurídica</option>
+            <option value="Secretaría de la Mujer y Equidad de Género">Secretaría de la Mujer</option>
+            <option value="Secretaría de Desarrollo Social">Desarrollo Social</option>
+            <option value="Secretaría de Gobierno">Secretaría de Gobierno</option>
+            <option value="Secretaría de Salud">Secretaría de Salud</option>
+            <option value="Secretaría de Infraestructura y Desarrollo Físico">Infraestructura</option>
+            <option value="Secretaría de Educación y Cultura">Educación y Cultura</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Responsable Asignado</label>
+          <input type="text" id="form-responsable" placeholder="Funcionario a cargo" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+        </div>
+        <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-3">
+          <span class="block text-[10px] font-bold text-slate-700 uppercase">Gestión de Respuesta Inicial (Opcional)</span>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[9px] font-semibold text-slate-500 mb-1">Fecha Respuesta</label>
+              <input type="date" id="form-fecha-resp" class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-[9px] font-semibold text-slate-500 mb-1">Estado del Proceso</label>
+              <select id="form-estado" class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="En trámite">En trámite</option>
+                <option value="Cerrado con solución">Cerrado con solución</option>
+              </select>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-[9px] font-semibold text-slate-500 mb-1">Contenido de Respuesta</label>
+              <textarea id="form-respuesta" rows="2" placeholder="Respuesta formal entregada al peticionario..." class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-2 flex justify-end space-x-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeAddModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold text-xs">Cancelar</button>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm">Guardar y Radicar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE LOGICA Y DATOS -->
+  <script>
+    // --- LISTA DE DIAS FESTIVOS DE COLOMBIA (2026) ---
+    // Extraído de las especificaciones y el archivo cargado para un cálculo preciso del ANS en días hábiles
+    const festivos2026 = [
+      "2026-01-01", // Año Nuevo
+      "2026-01-05", // Día de los Reyes Magos
+      "2026-03-23", // San José
+      "2026-04-02", // Jueves Santo
+      "2026-04-03", // Viernes Santo
+      "2026-05-01", // Día del Trabajo
+      "2026-05-18", // Ascensión del Señor
+      "2026-06-08", // Corpus Christi
+      "2026-06-15", // Sagrado Corazón
+      "2026-06-29", // San Pedro y San Pablo
+      "2026-07-20", // Grito de Independencia
+      "2026-08-07", // Batalla de Boyacá
+      "2026-08-17", // Asunción de la Virgen
+      "2026-10-12", // Día de la Raza
+      "2026-11-02", // Todos los Santos
+      "2026-11-16", // Independencia de Cartagena
+      "2026-12-08", // Inmaculada Concepción
+      "2026-12-25"  // Navidad
+    ];
+
+    // --- BASE DE DATOS INICIAL (Datos reales basados en registros del CSV) ---
+    let db = [
+      {
+        radicado: "PQRS-2026-0996",
+        fechaRadicacion: "2026-03-07",
+        canal: "PÁGINA WEB",
+        tipo: "SUGERENCIA",
+        peticionario: "Diana Díaz",
+        identificacion: "769332926",
+        email: "diana.díaz70@ejemplo.com",
+        telefono: "3176482823",
+        asunto: "Ampliar silletería en sala de espera",
+        anexos: "NO",
+        direcciona: "Jurídica",
+        responsable: "Diego Alejandro Marín",
+        respuesta: "Se revisó la solicitud y se dio respuesta definitiva de fondo enviada al correo registrado.",
+        estado: "Cerrado con solución",
+        fechaRespuesta: "2026-03-12",
+        fechaVencimiento: "2026-03-27"
+      },
+      {
+        radicado: "PQRS-2026-0997",
+        fechaRadicacion: "2026-01-10",
+        canal: "PÁGINA WEB",
+        tipo: "SUGERENCIA",
+        peticionario: "Sandra Díaz",
+        identificacion: "939422412",
+        email: "sandra.díaz70@ejemplo.com",
+        telefono: "3192961991",
+        asunto: "Ampliar silletería en sala de espera",
+        anexos: "NO",
+        direcciona: "Jurídica",
+        responsable: "Sandra Milena Ortiz",
+        respuesta: "Se revisó la solicitud y se dio respuesta definitiva de fondo enviada al correo registrado.",
+        estado: "Cerrado con solución",
+        fechaRespuesta: "2026-01-15",
+        fechaVencimiento: "2026-01-30"
+      },
+      {
+        radicado: "PQRS-2026-0998",
+        fechaRadicacion: "2026-02-26",
+        canal: "LÍNEA TELEFÓNICA",
+        tipo: "RECLAMO",
+        peticionario: "María Torres",
+        identificacion: "1068631854",
+        email: "maría.torres38@ejemplo.com",
+        telefono: "3175740441",
+        asunto: "Falta de ventilación en oficinas",
+        anexos: "NO",
+        direcciona: "Secretaría de la Mujer y Equidad de Género",
+        responsable: "Yolanda García Pérez",
+        respuesta: "Se procedió a la revisión técnica del sistema de ventilación de la oficina correspondiente y se agendó mantenimiento correctivo.",
+        estado: "Cerrado con solución",
+        fechaRespuesta: "2026-03-10",
+        fechaVencimiento: "2026-03-19"
+      },
+      {
+        radicado: "PQRS-2026-0999",
+        fechaRadicacion: "2026-01-08",
+        canal: "CORREO CORRESPONDENCIA",
+        tipo: "PETICIÓN",
+        peticionario: "Carlos Gómez",
+        identificacion: "1015438291",
+        email: "carlos.gomez@ejemplo.com",
+        telefono: "3004829120",
+        asunto: "Solicitud de capacitación sobre equidad de género en el sector rural",
+        anexos: "SI",
+        direcciona: "Secretaría de la Mujer y Equidad de Género",
+        responsable: "Diana Carolina Serna",
+        respuesta: "Se aprobó el cronograma de capacitaciones y se envió la invitación formal con las fechas para las veredas priorizadas.",
+        estado: "Cerrado con solución",
+        fechaRespuesta: "2026-01-22",
+        fechaVencimiento: "2026-01-29"
+      },
+      {
+        radicado: "PQRS-2026-1000",
+        fechaRadicacion: "2026-02-15",
+        canal: "VENTANILLA",
+        tipo: "QUEJA",
+        peticionario: "Juan Gabriel Restrepo",
+        identificacion: "71829104",
+        email: "jg.restrepo@ejemplo.com",
+        telefono: "3118291045",
+        asunto: "Demora excesiva en atención al usuario en ventanilla presencial",
+        anexos: "NO",
+        direcciona: "Secretaría de Gobierno",
+        responsable: "Andrés Felipe Calle",
+        respuesta: "",
+        estado: "En trámite",
+        fechaRespuesta: "",
+        fechaVencimiento: "2026-03-08"
+      },
+      {
+        radicado: "PQRS-2026-1001",
+        fechaRadicacion: "2026-03-01",
+        canal: "PÁGINA WEB",
+        tipo: "DENUNCIA",
+        peticionario: "Anónimo",
+        identificacion: "0",
+        email: "anonimo@correo.com",
+        telefono: "",
+        asunto: "Presunto cobro irregular de trámites en inspección de policía",
+        anexos: "SI",
+        direcciona: "Secretaría de Gobierno",
+        responsable: "Oficina de Control Interno",
+        respuesta: "",
+        estado: "En trámite",
+        fechaVencimiento: "2026-03-22",
+        fechaRespuesta: ""
+      },
+      {
+        radicado: "PQRS-2026-1002",
+        fechaRadicacion: "2026-03-12",
+        canal: "PÁGINA WEB",
+        tipo: "FELICITACIÓN",
+        peticionario: "Lucía Fernández",
+        identificacion: "103948291",
+        email: "lucia.fer@ejemplo.com",
+        telefono: "3184920193",
+        asunto: "Excelente atención de la promotora comunitaria de salud",
+        anexos: "NO",
+        direcciona: "Secretaría de Salud",
+        responsable: "Martha Cecilia López",
+        respuesta: "Se remitió la felicitación formal a la funcionaria de salud y se anexó copia a su hoja de vida por su destacado desempeño.",
+        estado: "Cerrado con solución",
+        fechaRespuesta: "2026-03-18",
+        fechaVencimiento: "2026-04-02"
+      },
+      {
+        radicado: "PQRS-2026-1003",
+        fechaRadicacion: "2026-03-20",
+        canal: "VENTANILLA",
+        tipo: "PETICIÓN",
+        peticionario: "Asociación de Mujeres Cabeza de Familia",
+        identificacion: "900384910",
+        email: "mujeres.asoc@ejemplo.com",
+        telefono: "3204918291",
+        asunto: "Solicitud de apoyo económico para proyecto productivo de costura",
+        anexos: "SI",
+        direcciona: "Secretaría de Desarrollo Social",
+        responsable: "Beatriz Elena Osorio",
+        respuesta: "",
+        estado: "En trámite",
+        fechaVencimiento: "2026-04-10",
+        fechaRespuesta: ""
+      },
+      {
+        radicado: "PQRS-2026-1004",
+        fechaRadicacion: "2026-03-18",
+        canal: "CORREO CORRESPONDENCIA",
+        tipo: "RECLAMO",
+        peticionario: "Andrés Alzate",
+        identificacion: "94829104",
+        email: "andres.alzate@ejemplo.com",
+        telefono: "3014910291",
+        asunto: "Hueco peligroso en vía principal frente a escuela comunitaria",
+        anexos: "SI",
+        direcciona: "Secretaría de Infraestructura y Desarrollo Físico",
+        responsable: "Ing. Mauricio Restrepo",
+        respuesta: "",
+        estado: "En trámite",
+        fechaVencimiento: "2026-04-08",
+        fechaRespuesta: ""
+      },
+      {
+        radicado: "PQRS-2026-02-150",
+        fechaRadicacion: "2026-02-10",
+        canal: "LÍNEA TELEFÓNICA",
+        tipo: "QUEJA",
+        peticionario: "Patricia Quintero",
+        identificacion: "101738291",
+        email: "p.quintero@ejemplo.com",
+        telefono: "3128392019",
+        asunto: "Falta de insumos médicos básicos en el puesto de salud veredal",
+        anexos: "NO",
+        direcciona: "Secretaría de Salud",
+        responsable: "Martha Cecilia López",
+        respuesta: "Se realizó el envío inmediato del inventario de insumos prioritarios y se reforzó el control de stock mensual.",
+        estado: "Cerrado con solución",
+        fechaRespuesta: "2026-02-28",
+        fechaVencimiento: "2026-03-03"
+      }
+    ];
+
+    // --- INSTANCIAS GLOBALES DE GRÁFICOS (Para actualización reactiva) ---
+    let chartHistoricoInstance = null;
+    let chartTipoInstance = null;
+    let chartDependenciasInstance = null;
+    let chartCanalesInstance = null;
+
+    // --- PAGINACIÓN ---
+    let currentPage = 1;
+    const recordsPerPage = 5;
+    let filteredData = [];
+
+    // --- FUNCIONES UTILERÍA DE FECHAS (ANS Y DÍAS HÁBILES) ---
+    
+    // Suma días hábiles a una fecha dada, respetando fines de semana y festivos de Colombia 2026
+    function addBusinessDays(startDateStr, days) {
+      let date = new Date(startDateStr + "T00:00:00");
+      let count = 0;
+      while (count < days) {
+        date.setDate(date.getDate() + 1);
+        let dayOfWeek = date.getDay(); // 0: Domingo, 6: Sábado
+        let formattedDate = date.toISOString().split('T')[0];
+        
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !festivos2026.includes(formattedDate)) {
+          count++;
+        }
+      }
+      return date.toISOString().split('T')[0];
+    }
+
+    // Calcula días hábiles de diferencia entre dos fechas
+    function getWorkingDaysDiff(startDateStr, endDateStr) {
+      if (!startDateStr || !endDateStr) return 0;
+      let start = new Date(startDateStr + "T00:00:00");
+      let end = new Date(endDateStr + "T00:00:00");
+      let sign = 1;
+      
+      if (start > end) {
+        let temp = start;
+        start = end;
+        end = temp;
+        sign = -1;
+      }
+      
+      let count = 0;
+      let cur = new Date(start);
+      
+      // No incluimos el día inicial en el conteo regular de trámite de PQRS
+      while (cur < end) {
+        cur.setDate(cur.getDate() + 1);
+        let dayOfWeek = cur.getDay();
+        let formatted = cur.toISOString().split('T')[0];
+        if (dayOfWeek !== 0 && dayOfWeek !== 6 && !festivos2026.includes(formatted)) {
+          count++;
+        }
+      }
+      return count * sign;
+    }
+
+    // --- LOGICA DE RENDERIZADO Y FILTRADO ---
+
+    window.onload = function() {
+      lucide.createIcons();
+      initDefaultDates();
+      applyFilters();
+    };
+
+    function initDefaultDates() {
+      // Configuramos rango inicial predeterminado amplio para ver los datos de prueba del 2026
+      document.getElementById('filter-date-start').value = '2026-01-01';
+      document.getElementById('filter-date-end').value = '2026-12-31';
+    }
+
+    function resetFilters() {
+      initDefaultDates();
+      document.getElementById('filter-canal').value = '';
+      document.getElementById('filter-tipo').value = '';
+      document.getElementById('filter-dependencia').value = '';
+      document.getElementById('filter-estado').value = '';
+      document.getElementById('table-search').value = '';
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const start = document.getElementById('filter-date-start').value;
+      const end = document.getElementById('filter-date-end').value;
+      const canal = document.getElementById('filter-canal').value;
+      const tipo = document.getElementById('filter-tipo').value;
+      const depe = document.getElementById('filter-dependencia').value;
+      const estado = document.getElementById('filter-estado').value;
+      const search = document.getElementById('table-search').value.toLowerCase().trim();
+
+      filteredData = db.filter(item => {
+        // Filtro Fechas
+        if (start && item.fechaRadicacion < start) return false;
+        if (end && item.fechaRadicacion > end) return false;
+        
+        // Filtros Atributos
+        if (canal && item.canal !== canal) return false;
+        if (tipo && item.tipo !== tipo) return false;
+        if (depe && item.direcciona !== depe) return false;
+        if (estado && item.estado !== estado) return false;
+
+        // Búsqueda de Texto
+        if (search) {
+          const content = `${item.radicado} ${item.peticionario} ${item.asunto} ${item.responsable}`.toLowerCase();
+          if (!content.includes(search)) return false;
+        }
+
+        return true;
+      });
+
+      currentPage = 1; // Volver a la primera página tras filtrar
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      updateKPIs();
+      renderCharts();
+      renderTable();
+    }
+
+    // --- ACTUALIZACIÓN DE TARJETAS KPI ---
+    function updateKPIs() {
+      const total = filteredData.length;
+      const tramite = filteredData.filter(i => i.estado === "En trámite").length;
+      const resueltos = filteredData.filter(i => i.estado === "Cerrado con solución").length;
+      
+      // % de Oportunidad (ANS): cerrados dentro del término de su vencimiento legal
+      const cerradosA_Tiempo = filteredData.filter(i => {
+        return i.estado === "Cerrado con solución" && (i.fechaRespuesta <= i.fechaVencimiento);
+      }).length;
+      
+      const ansPct = resueltos > 0 ? Math.round((cerradosA_Tiempo / resueltos) * 100) : 100;
+
+      document.getElementById('kpi-total').innerText = total;
+      document.getElementById('kpi-tramite').innerText = tramite;
+      document.getElementById('kpi-resueltos').innerText = resueltos;
+      document.getElementById('kpi-ans').innerText = `${ansPct}%`;
+
+      const pctTramite = total > 0 ? Math.round((tramite / total) * 100) : 0;
+      const pctCerrados = total > 0 ? Math.round((resueltos / total) * 100) : 0;
+
+      document.getElementById('kpi-tramite-pct').innerText = `${pctTramite}% del total filtrado`;
+      document.getElementById('kpi-resueltos-pct').innerText = `${pctCerrados}% del total filtrado`;
+    }
+
+    // --- ACTUALIZACIÓN DE GRÁFICOS (CHART.JS) ---
+    function renderCharts() {
+      // 1. Destruir instancias existentes
+      if (chartHistoricoInstance) chartHistoricoInstance.destroy();
+      if (chartTipoInstance) chartTipoInstance.destroy();
+      if (chartDependenciasInstance) chartDependenciasInstance.destroy();
+      if (chartCanalesInstance) chartCanalesInstance.destroy();
+
+      // --- GRÁFICO HISTÓRICO MENSUAL ---
+      const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      const conteoMeses = Array(12).fill(0);
+      filteredData.forEach(item => {
+        const mes = parseInt(item.fechaRadicacion.split('-')[1]) - 1;
+        if (mes >= 0 && mes < 12) conteoMeses[mes]++;
+      });
+
+      const ctxHistorico = document.getElementById('chart-historico').getContext('2d');
+      chartHistoricoInstance = new Chart(ctxHistorico, {
+        type: 'line',
+        data: {
+          labels: meses,
+          datasets: [{
+            label: 'PQRSDF Radicadas',
+            data: conteoMeses,
+            borderColor: '#1a73e8',
+            backgroundColor: 'rgba(26, 115, 232, 0.08)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2.5,
+            pointBackgroundColor: '#1a73e8',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // --- GRÁFICO TIPO DE REQUERIMIENTO (DONA) ---
+      const tiposMap = {};
+      filteredData.forEach(item => {
+        tiposMap[item.tipo] = (tiposMap[item.tipo] || 0) + 1;
+      });
+
+      const ctxTipo = document.getElementById('chart-tipo').getContext('2d');
+      chartTipoInstance = new Chart(ctxTipo, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(tiposMap),
+          datasets: [{
+            data: Object.values(tiposMap),
+            backgroundColor: ['#1A73E8', '#FBBC04', '#EA4335', '#34A853', '#A142F4', '#24B6F7'],
+            borderWidth: 1.5,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { boxWidth: 12, font: { size: 10 } }
+            }
+          },
+          cutout: '65%'
+        }
+      });
+
+      // --- GRÁFICO POR DEPENDENCIA ---
+      const depMap = {};
+      filteredData.forEach(item => {
+        // Usar versiones cortas de las secretarias para que quepan en la grafica
+        const depeCorta = item.direcciona.replace("Secretaría de ", "");
+        depMap[depeCorta] = (depMap[depeCorta] || 0) + 1;
+      });
+
+      const ctxDep = document.getElementById('chart-dependencias').getContext('2d');
+      chartDependenciasInstance = new Chart(ctxDep, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(depMap),
+          datasets: [{
+            data: Object.values(depMap),
+            backgroundColor: 'rgba(99, 102, 241, 0.85)',
+            hoverBackgroundColor: '#4f46e5',
+            borderRadius: 6,
+            barThickness: 18
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
+            y: { grid: { display: false }, ticks: { font: { size: 9.5 } } }
+          }
+        }
+      });
+
+      // --- GRÁFICO POR CANALES ---
+      const canalMap = {};
+      filteredData.forEach(item => {
+        canalMap[item.canal] = (canalMap[item.canal] || 0) + 1;
+      });
+
+      const ctxCanal = document.getElementById('chart-canales').getContext('2d');
+      chartCanalesInstance = new Chart(ctxCanal, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(canalMap),
+          datasets: [{
+            data: Object.values(canalMap),
+            backgroundColor: ['#0d9488', '#0284c7', '#4f46e5', '#f59e0b'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { boxWidth: 10, font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // --- RENDERIZADO DE TABLA ---
+    function renderTable() {
+      const tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+
+      if (filteredData.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-8 text-center text-slate-400">
+              <div class="flex flex-col items-center space-y-1">
+                <i data-lucide="inbox" class="w-8 h-8 text-slate-300"></i>
+                <p class="font-medium">No se encontraron requerimientos</p>
+                <p class="text-[11px]">Prueba ajustando los filtros superiores</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        document.getElementById('table-showing-start').innerText = '0';
+        document.getElementById('table-showing-end').innerText = '0';
+        document.getElementById('table-showing-total').innerText = '0';
+        document.getElementById('btn-prev').disabled = true;
+        document.getElementById('btn-next').disabled = true;
+        return;
+      }
+
+      // Ordenación descendente por defecto (más recientes primero)
+      filteredData.sort((a, b) => b.fechaRadicacion.localeCompare(a.fechaRadicacion));
+
+      const totalItems = filteredData.length;
+      const totalPages = Math.ceil(totalItems / recordsPerPage);
+      const startIndex = (currentPage - 1) * recordsPerPage;
+      const endIndex = Math.min(startIndex + recordsPerPage, totalItems);
+
+      const pageItems = filteredData.slice(startIndex, endIndex);
+
+      pageItems.forEach(item => {
+        // Cálculo del semáforo de vencimiento
+        let alertaClase = "";
+        let alertaTexto = "";
+        
+        const hoy = "2026-03-24"; // Seteado a la fecha operativa de los datos de prueba
+        const diasRestantes = getWorkingDaysDiff(item.fechaRespuesta || hoy, item.fechaVencimiento);
+
+        if (item.estado === "Cerrado con solución") {
+          if (item.fechaRespuesta <= item.fechaVencimiento) {
+            alertaClase = "bg-emerald-50 text-emerald-700 border border-emerald-100";
+            alertaTexto = `Respondido a tiempo`;
+          } else {
+            alertaClase = "bg-red-50 text-red-700 border border-red-100";
+            alertaTexto = `Respondido con retraso`;
+          }
+        } else {
+          if (diasRestantes < 0) {
+            alertaClase = "bg-red-50 text-red-700 border border-red-100 animate-pulse";
+            alertaTexto = `Vencido hace ${Math.abs(diasRestantes)} días hábiles`;
+          } else if (diasRestantes <= 3) {
+            alertaClase = "bg-amber-50 text-amber-700 border border-amber-100";
+            alertaTexto = `Crítico: ${diasRestantes} días restantes`;
+          } else {
+            alertaClase = "bg-blue-50 text-blue-700 border border-blue-100";
+            alertaTexto = `${diasRestantes} días hábiles disponibles`;
+          }
+        }
+
+        const estadoClase = item.estado === "Cerrado con solución" 
+          ? "bg-emerald-500 text-white" 
+          : "bg-amber-500 text-white";
+
+        const row = document.createElement('tr');
+        row.className = "hover:bg-slate-50 transition-colors";
+        row.innerHTML = `
+          <td class="py-3 px-4 font-bold text-blue-700">${item.radicado}</td>
+          <td class="py-3 px-4 whitespace-nowrap">${item.fechaRadicacion}</td>
+          <td class="py-3 px-4"><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold">${item.canal}</span></td>
+          <td class="py-3 px-4"><span class="font-bold text-[10px] text-slate-600">${item.tipo}</span></td>
+          <td class="py-3 px-4">
+            <div class="font-medium text-slate-800">${item.peticionario}</div>
+            <div class="text-[10px] text-slate-400">${item.identificacion === "0" ? 'Anónimo' : 'C.C. ' + item.identificacion}</div>
+          </td>
+          <td class="py-3 px-4 truncate max-w-xs font-normal" title="${item.asunto}">${item.asunto}</td>
+          <td class="py-3 px-4">
+            <div class="font-semibold text-[10px] text-indigo-700">${item.direcciona.replace("Secretaría de ", "")}</div>
+            <div class="text-[10px] text-slate-400">${item.responsable || "Sin asignar"}</div>
+          </td>
+          <td class="py-3 px-4"><span class="text-[10px] px-2.5 py-1 rounded-full font-semibold ${alertaClase}">${alertaTexto}</span></td>
+          <td class="py-3 px-4"><span class="text-[10px] px-2 py-1 rounded font-bold ${estadoClase}">${item.estado}</span></td>
+          <td class="py-3 px-4">
+            <button onclick="viewDetails('${item.radicado}')" class="text-blue-600 hover:text-blue-800 font-bold hover:underline flex items-center space-x-0.5">
+              <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              <span>Ver</span>
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Actualizar variables de pie de tabla
+      document.getElementById('table-showing-start').innerText = startIndex + 1;
+      document.getElementById('table-showing-end').innerText = endIndex;
+      document.getElementById('table-showing-total').innerText = totalItems;
+      document.getElementById('table-page-number').innerText = `Página ${currentPage} de ${totalPages || 1}`;
+
+      document.getElementById('btn-prev').disabled = currentPage === 1;
+      document.getElementById('btn-next').disabled = currentPage === totalPages || totalPages === 0;
+
+      lucide.createIcons();
+    }
+
+    function changePage(direction) {
+      currentPage += direction;
+      renderTable();
+    }
+
+    // --- DETALLE DE RADICADO EN MODAL ---
+    function viewDetails(radId) {
+      const item = db.find(i => i.radicado === radId);
+      if (!item) return;
+
+      document.getElementById('modal-rad-id').innerText = item.radicado;
+      document.getElementById('modal-rad-fecha').innerText = item.fechaRadicacion;
+      document.getElementById('modal-rad-canal').innerText = item.canal;
+      document.getElementById('modal-rad-tipo').innerText = item.tipo;
+      document.getElementById('modal-rad-nombre').innerText = item.peticionario;
+      document.getElementById('modal-rad-cedula').innerText = item.identificacion === "0" ? 'Anónimo / No Suministrada' : item.identificacion;
+      document.getElementById('modal-rad-contacto').innerText = `${item.email || 'No suministrado'} | Tel: ${item.telefono || 'No suministrado'}`;
+      document.getElementById('modal-rad-asunto').innerText = item.asunto;
+      document.getElementById('modal-rad-vence').innerText = item.fechaVencimiento;
+      
+      const hoy = "2026-03-24";
+      const diasRestantes = getWorkingDaysDiff(item.fechaRespuesta || hoy, item.fechaVencimiento);
+      document.getElementById('modal-rad-restantes').innerText = diasRestantes < 0 
+        ? `${Math.abs(diasRestantes)} días hábiles vencido` 
+        : `${diasRestantes} días hábiles de plazo`;
+
+      document.getElementById('modal-rad-direcciona').innerText = item.direcciona;
+      document.getElementById('modal-rad-responsable').innerText = item.responsable || "Por asignar";
+      document.getElementById('modal-rad-respuesta').innerText = item.respuesta || "Aún no se ha estructurado una respuesta oficial para esta solicitud.";
+      document.getElementById('modal-rad-fresp').innerText = item.fechaRespuesta || "Pendiente";
+      document.getElementById('modal-rad-estado').innerText = item.estado;
+
+      document.getElementById('detail-modal').classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detail-modal').classList.add('hidden');
+    }
+
+    // --- RADICACIÓN DE NUEVO PQRSDF (MODAL ACCIÓN) ---
+    function openAddModal() {
+      // Auto-generamos la fecha de radicación al día de hoy para agilizar la carga
+      document.getElementById('form-fecha-rad').value = "2026-03-24";
+      document.getElementById('add-modal').classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+      document.getElementById('add-modal').classList.add('hidden');
+      document.getElementById('add-form').reset();
+    }
+
+    function submitForm(e) {
+      e.preventDefault();
+
+      const fRad = document.getElementById('form-fecha-rad').value;
+      const canal = document.getElementById('form-canal').value;
+      const tipo = document.getElementById('form-tipo').value;
+      const nombre = document.getElementById('form-nombre').value;
+      const cedula = document.getElementById('form-identificacion').value;
+      const email = document.getElementById('form-email').value;
+      const tel = document.getElementById('form-telefono').value;
+      const anexos = document.getElementById('form-anexos').value;
+      const asunto = document.getElementById('form-asunto').value;
+      const direcciona = document.getElementById('form-direcciona').value;
+      const resp = document.getElementById('form-responsable').value;
+      const fResp = document.getElementById('form-fecha-resp').value;
+      const estado = document.getElementById('form-estado').value;
+      const respuestaDesc = document.getElementById('form-respuesta').value;
+
+      // Calcular fecha de vencimiento basándonos en Leyes Colombianas (15 días hábiles promedio para peticiones)
+      let terminosLegales = 15;
+      if (tipo === "SUGERENCIA" || tipo === "FELICITACIÓN") terminosLegales = 10;
+      if (tipo === "QUEJA" || tipo === "RECLAMO") terminosLegales = 15;
+      if (tipo === "PETICIÓN") terminosLegales = 15;
+      if (tipo === "DENUNCIA") terminosLegales = 30;
+
+      const fVencimiento = addBusinessDays(fRad, terminosLegales);
+
+      // Auto-generar consecutivo de radicado
+      const consecutivo = db.length + 1001;
+      const nuevoRadicado = `PQRS-2026-${consecutivo}`;
+
+      const nuevoItem = {
+        radicado: nuevoRadicado,
+        fechaRadicacion: fRad,
+        canal: canal,
+        tipo: tipo,
+        peticionario: nombre,
+        identificacion: cedula,
+        email: email,
+        telefono: tel,
+        asunto: asunto,
+        anexos: anexos,
+        direcciona: direcciona,
+        responsable: resp || "Asignación pendiente",
+        respuesta: respuestaDesc,
+        estado: estado,
+        fechaRespuesta: fResp,
+        fechaVencimiento: fVencimiento
+      };
+
+      // Guardar en la BD local de simulación
+      db.unshift(nuevoItem);
+
+      // Actualizar filtros y tablero
+      applyFilters();
+      closeAddModal();
+
+      // Alerta amigable en la interfaz
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 z-50 transform transition-all duration-300";
+      toast.innerHTML = `
+        <i data-lucide="check-circle-2" class="text-emerald-400 w-5 h-5"></i>
+        <div class="text-xs">
+          <p class="font-bold">¡Radicación Exitosa!</p>
+          <p class="text-[10px] text-slate-300">Asignado el radicado ${nuevoRadicado}</p>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // --- EXPORTAR A CSV ---
+    function exportToCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Radicado,Fecha Radicacion,Canal,Tipo,Peticionario,Identificacion,Asunto,Anexo,Direcciona,Responsable,Estado,Fecha Respuesta,Fecha Vencimiento\n";
+
+      filteredData.forEach(item => {
+        const row = [
+          item.radicado,
+          item.fechaRadicacion,
+          item.canal,
+          item.tipo,
+          `"${item.peticionario.replace(/"/g, '""')}"`,
+          item.identificacion,
+          `"${item.asunto.replace(/"/g, '""')}"`,
+          item.anexos,
+          item.direcciona,
+          `"${(item.responsable || '').replace(/"/g, '""')}"`,
+          item.estado,
+          item.fechaRespuesta || '',
+          item.fechaVencimiento
+        ].join(",");
+        csvContent += row + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `CONTROL_PQRSDF_FOR-CSC-007_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
