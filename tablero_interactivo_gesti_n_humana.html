@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looker Studio - Gestión Humana & SST</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'Open Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        looker: {
+                            blue: '#1a73e8',
+                            dark: '#5f6368',
+                            light: '#f8f9fa',
+                            border: '#dadce0',
+                            accent: '#12b5cb',
+                            indigo: '#3f51b5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-shadow { box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15); }
+        .card-shadow { box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15); }
+        .scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-[#f1f3f4] text-[#3c4043] min-h-screen flex flex-col font-sans">
+
+    <!-- CABECERA ESTILO LOOKER STUDIO -->
+    <header class="bg-white border-b border-looker-border px-6 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-[#e8f0fe] rounded-lg">
+                <i class="fa-solid fa-chart-line text-looker-blue text-2xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs bg-[#f1f3f4] text-[#5f6368] font-bold px-2 py-0.5 rounded">VISTA PREVIA</span>
+                    <span class="text-xs text-gray-500">Actualizado hace unos momentos</span>
+                </div>
+                <h1 class="text-lg font-bold text-[#1f1f1f] flex items-center gap-2">
+                    Dashboard GH & SST - Caracterización de Personal
+                    <span class="text-xs font-normal text-gray-400">v1.2</span>
+                </h1>
+            </div>
+        </div>
+        
+        <!-- PESTAÑAS DE NAVEGACIÓN -->
+        <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+            <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm">
+                <i class="fa-solid fa-gauge mr-2"></i>Dashboard Dinámico
+            </button>
+            <button onclick="switchTab('guide')" id="btn-tab-guide" class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black">
+                <i class="fa-solid fa-book-open mr-2"></i>Guía de Conexión a Looker Studio
+            </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="resetFilters()" class="text-sm px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md flex items-center gap-2 border border-looker-border">
+                <i class="fa-solid fa-rotate-right"></i> Restablecer Filtros
+            </button>
+            <a href="https://lookerstudio.google.com/" target="_blank" class="bg-looker-blue text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition duration-150 flex items-center gap-2">
+                Ir a Looker Studio <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- SECCIÓN PRINCIPAL: DASHBOARD -->
+    <main id="tab-dashboard" class="p-6 max-w-[1600px] w-full mx-auto flex-grow flex flex-col gap-6">
+        
+        <!-- BARRA DE CONTROLES / FILTROS (DINÁMICOS) -->
+        <section class="bg-white p-4 rounded-lg card-shadow border border-looker-border">
+            <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
+                <i class="fa-solid fa-filter text-looker-blue text-xs"></i>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500">Controles del Tablero (Filtros Interactivos)</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Filtro Género -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Género</label>
+                    <select id="filter-genero" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-3 py-2 text-sm focus:outline-none focus:border-looker-blue transition">
+                        <option value="Todos">Todos</option>
+                        <option value="F">Femenino (F)</option>
+                        <option value="M">Masculino (M)</option>
+                    </select>
+                </div>
+                <!-- Filtro Escolaridad -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nivel Académico</label>
+                    <select id="filter-escolaridad" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-3 py-2 text-sm focus:outline-none focus:border-looker-blue transition">
+                        <option value="Todos">Todos</option>
+                        <option value="Especialización">Especialización</option>
+                        <option value="Profesional">Profesional</option>
+                        <option value="Tecnólogo/Técnico">Tecnólogo / Técnico</option>
+                        <option value="Bachiller">Bachiller</option>
+                    </select>
+                </div>
+                <!-- Filtro Rango Etario -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Rango Etario</label>
+                    <select id="filter-edad" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-3 py-2 text-sm focus:outline-none focus:border-looker-blue transition">
+                        <option value="Todos">Todos</option>
+                        <option value="20-35">20 - 35 Años</option>
+                        <option value="36-50">36 - 50 Años</option>
+                        <option value="51-65">51 - 65 Años</option>
+                    </select>
+                </div>
+                <!-- Filtro Vinculación -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Tipo de Vinculación</label>
+                    <select id="filter-vinculacion" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-3 py-2 text-sm focus:outline-none focus:border-looker-blue transition">
+                        <option value="Todos">Todos</option>
+                        <option value="Provisionalidad">Provisionalidad</option>
+                        <option value="Carrera Adm.">Carrera Adm.</option>
+                        <option value="Libre Nombramiento">Libre Nombramiento</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE KPI CARDS (DOCK DE TARJETAS DE RESULTADOS) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- KPI 1: Total Población -->
+            <div class="bg-white p-5 rounded-lg card-shadow border-t-4 border-t-looker-blue flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase font-bold tracking-wider text-gray-400 block">Servidores Activos</span>
+                    <span id="kpi-total" class="text-4xl font-extrabold text-slate-800 tracking-tight">143</span>
+                    <span class="text-xs text-gray-500 block mt-1">En el conjunto actual</span>
+                </div>
+                <div class="h-12 w-12 bg-blue-50 text-looker-blue rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <!-- KPI 2: % Mujeres -->
+            <div class="bg-white p-5 rounded-lg card-shadow border-t-4 border-t-purple-500 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase font-bold tracking-wider text-gray-400 block">% Participación F</span>
+                    <span id="kpi-mujeres" class="text-4xl font-extrabold text-slate-800 tracking-tight">63%</span>
+                    <span class="text-xs text-gray-500 block mt-1" id="kpi-mujeres-abs">90 Servidoras</span>
+                </div>
+                <div class="h-12 w-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-venus"></i>
+                </div>
+            </div>
+
+            <!-- KPI 3: Promedio de Antigüedad -->
+            <div class="bg-white p-5 rounded-lg card-shadow border-t-4 border-t-emerald-500 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase font-bold tracking-wider text-gray-400 block">Exp. Promedio Org.</span>
+                    <span id="kpi-experiencia" class="text-4xl font-extrabold text-slate-800 tracking-tight">14.2</span>
+                    <span class="text-xs text-gray-500 block mt-1">Años acumulados</span>
+                </div>
+                <div class="h-12 w-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+            </div>
+
+            <!-- KPI 4: Prepensionados -->
+            <div class="bg-white p-5 rounded-lg card-shadow border-t-4 border-t-amber-500 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase font-bold tracking-wider text-gray-400 block">Casos Prepensionados</span>
+                    <span id="kpi-prepensionados" class="text-4xl font-extrabold text-slate-800 tracking-tight">28</span>
+                    <span class="text-xs text-amber-600 font-medium block mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Alerta Retiro
+                    </span>
+                </div>
+                <div class="h-12 w-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE GRÁFICAS (FILA CENTRAL) -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Gráfica 1: Escolaridad (Pie/Donut) -->
+            <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[380px]">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-graduation-cap text-looker-blue mr-1"></i> Nivel Académico</h3>
+                    <span class="text-xs text-gray-400">Porcentaje</span>
+                </div>
+                <div class="flex-grow relative flex items-center justify-center">
+                    <canvas id="chartEscolaridad" class="max-h-[280px]"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfica 2: Rango Etario (Barras) -->
+            <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[380px]">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-cake-candles text-looker-blue mr-1"></i> Distribución de Edad</h3>
+                    <span class="text-xs text-gray-400">Cantidad de personas</span>
+                </div>
+                <div class="flex-grow relative">
+                    <canvas id="chartEdad"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfica 3: Tipo de Vinculación (Barras Horizontales) -->
+            <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[380px]">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-briefcase text-looker-blue mr-1"></i> Tipo de Vinculación</h3>
+                    <span class="text-xs text-gray-400">Volumetría</span>
+                </div>
+                <div class="flex-grow relative">
+                    <canvas id="chartVinculacion"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN INFERIOR: CALIDAD DE VIDA & LISTA DE REGISTROS -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- BIENESTAR & MOVILIDAD (4 columnas) -->
+            <div class="lg:col-span-4 bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-heart-pulse text-emerald-500 mr-1"></i> Calidad de Vida (Subgrupo)</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- Medio de transporte preferido -->
+                        <div>
+                            <span class="text-xs text-gray-500 font-semibold block mb-2">Medio de Transporte Preferido</span>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span>Moto (Movilidad Propia)</span>
+                                        <span class="font-bold" id="pct-moto">52%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-moto" class="bg-teal-500 h-full rounded-full" style="width: 52%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span>Automóvil</span>
+                                        <span class="font-bold" id="pct-carro">28%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-carro" class="bg-emerald-500 h-full rounded-full" style="width: 28%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span>Servicio Público / Alternativos</span>
+                                        <span class="font-bold" id="pct-publico">20%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                                        <div id="bar-publico" class="bg-indigo-500 h-full rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tenencia de Vivienda -->
+                        <div class="pt-2">
+                            <span class="text-xs text-gray-500 font-semibold block mb-2">Tenencia de Vivienda</span>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-slate-50 p-2 rounded border border-gray-100">
+                                    <span class="block text-sm font-bold text-slate-700" id="viv-propia">45%</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Propia</span>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded border border-gray-100">
+                                    <span class="block text-sm font-bold text-slate-700" id="viv-arriendo">30%</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Arriendo</span>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded border border-gray-100">
+                                    <span class="block text-sm font-bold text-slate-700" id="viv-familiar">25%</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Familiar</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensaje Dinámico de Alerta o Recomendación -->
+                <div class="mt-4 p-3 bg-blue-50 border border-blue-100 rounded text-xs text-blue-800 flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info mt-0.5"></i>
+                    <p>Filtra por variables arriba para ver la distribución de vivienda y transporte en tiempo real.</p>
+                </div>
+            </div>
+
+            <!-- TABLA DE DETALLE DE SERVIDORES (8 columnas) -->
+            <div class="lg:col-span-8 bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col justify-between h-[380px]">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-2 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-list-check text-looker-blue mr-1"></i> Registros de Servidores</h3>
+                            <span id="table-count" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">143 mostrados</span>
+                        </div>
+                        <div class="relative w-48">
+                            <input type="text" id="table-search" oninput="applyFilters()" placeholder="Buscar por ID..." class="w-full bg-looker-light border border-looker-border rounded-md pl-8 pr-3 py-1 text-xs focus:outline-none focus:border-looker-blue">
+                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-gray-400 text-[10px]"></i>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor scrollable de tabla -->
+                    <div class="overflow-x-auto overflow-y-auto max-h-[220px] scrollbar border border-gray-100 rounded">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-gray-100 sticky top-0">
+                                    <th class="py-2 px-3 font-semibold">Cod. Empleado</th>
+                                    <th class="py-2 px-3 font-semibold">Género</th>
+                                    <th class="py-2 px-3 font-semibold">Rango Etario</th>
+                                    <th class="py-2 px-3 font-semibold">Escolaridad</th>
+                                    <th class="py-2 px-3 font-semibold">Tipo Vinculación</th>
+                                    <th class="py-2 px-3 font-semibold text-right">Antigüedad (Años)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="text-xs divide-y divide-gray-50">
+                                <!-- Filas renderizadas dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginación de Tabla -->
+                <div class="flex items-center justify-between pt-4 mt-auto border-t border-gray-100 text-xs text-gray-500">
+                    <span id="page-info">Mostrando 1 - 10 de 143</span>
+                    <div class="flex gap-1">
+                        <button onclick="prevPage()" class="p-1 px-2 border border-looker-border rounded hover:bg-slate-100 text-gray-600 transition disabled:opacity-50" id="btn-prev"><i class="fa-solid fa-angle-left"></i></button>
+                        <button onclick="nextPage()" class="p-1 px-2 border border-looker-border rounded hover:bg-slate-100 text-gray-600 transition disabled:opacity-50" id="btn-next"><i class="fa-solid fa-angle-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PÁGINA / GUÍA DE CONEXIÓN A LOOKER STUDIO REAL -->
+    <main id="tab-guide" class="p-6 max-w-[1200px] w-full mx-auto flex-grow flex flex-col gap-6 hidden">
+        <section class="bg-white p-8 rounded-lg card-shadow border border-looker-border">
+            <h2 class="text-2xl font-bold text-[#1f1f1f] mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+                <i class="fa-solid fa-book-open text-looker-blue"></i>
+                Guía de Conexión: Monta esto en tu Looker Studio Real
+            </h2>
+
+            <p class="text-sm text-gray-600 mb-6">
+                Para tener este tablero alimentado por tu hoja de cálculo o base de datos institucional de manera dinámica en Google Looker Studio, sigue este proceso paso a paso:
+            </p>
+
+            <div class="space-y-6">
+                <!-- Paso 1 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0">1</div>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-800">Estructurar los datos de origen (Google Sheets / Excel)</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Asegúrate de que tu hoja de cálculo tenga exactamente un encabezado por columna sin filas vacías ni celdas combinadas. Te recomendamos este formato de columnas:
+                        </p>
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-2 font-mono text-xs text-gray-700 overflow-x-auto">
+                            [Código_Servidor] | [Género] | [Edad] | [Nivel_Escolaridad] | [Tipo_Vinculación] | [Antigüedad_Años] | [Tipo_Vivienda] | [Transporte_Principal] | [Es_Prepensionado]
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0">2</div>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-800">Crear el Informe y conectar el Origen</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Entra a <a href="https://lookerstudio.google.com/" target="_blank" class="text-looker-blue underline">Looker Studio</a>, presiona <strong>Crear &gt; Informe</strong>, y selecciona el conector de <strong>Google Sheets</strong>. Elige tu archivo y la hoja correspondiente.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Paso 3 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0">3</div>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-800">Configurar Filtros de Datos (Dimensiones)</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            En el panel superior de Looker Studio, selecciona <strong>"Añadir un control" &gt; "Lista desplegable"</strong>.
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-gray-600 mt-2 space-y-1 pl-4">
+                            <li><strong>Control 1:</strong> Campo de control: <code class="bg-gray-100 px-1 rounded font-mono">Género</code></li>
+                            <li><strong>Control 2:</strong> Campo de control: <code class="bg-gray-100 px-1 rounded font-mono">Nivel_Escolaridad</code></li>
+                            <li><strong>Control 3:</strong> Campo de control (Fórmula de rango etario o campo directo): <code class="bg-gray-100 px-1 rounded font-mono">Rango_Etario</code></li>
+                            <li><strong>Control 4:</strong> Campo de control: <code class="bg-gray-100 px-1 rounded font-mono">Tipo_Vinculación</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Paso 4 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0">4</div>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-800">Agregar las Tarjetas de Resultados (KPIs)</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Selecciona <strong>"Añadir un gráfico" &gt; "Tarjeta de resultados"</strong>. Configura así:
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-gray-600 mt-2 space-y-1 pl-4">
+                            <li><strong>KPI 1 (Total Servidores):</strong> Métrica: <code class="bg-gray-100 px-1 rounded font-mono">Código_Servidor</code> con tipo de agregación <code class="bg-gray-100 px-1 rounded font-mono">Recuento de valores diferenciados (CTD)</code>.</li>
+                            <li><strong>KPI 2 (Promedio Antigüedad):</strong> Métrica: <code class="bg-gray-100 px-1 rounded font-mono">Antigüedad_Años</code>, agregación tipo <code class="bg-gray-100 px-1 rounded font-mono">Media (AVG)</code>.</li>
+                            <li><strong>KPI 3 (Prepensionados):</strong> Métrica: <code class="bg-gray-100 px-1 rounded font-mono">Es_Prepensionado</code>. Aplica un filtro al KPI de tipo <code class="bg-gray-100 px-1 rounded font-mono">Incluir Es_Prepensionado = SI</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Paso 5 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0">5</div>
+                    <div>
+                        <h3 class="font-bold text-base text-gray-800">Fórmulas útiles de campos calculados</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Si no tienes el rango etario en tu base de datos y deseas calcularlo dinámicamente desde la edad, crea un **Campo Calculado** en Looker Studio usando la siguiente fórmula:
+                        </p>
+                        <div class="bg-slate-900 text-slate-100 rounded p-4 mt-2 font-mono text-xs overflow-x-auto">
+                            CASE <br>
+                            &nbsp;&nbsp;WHEN Edad >= 20 AND Edad <= 35 THEN "20-35 Años"<br>
+                            &nbsp;&nbsp;WHEN Edad >= 36 AND Edad <= 50 THEN "36-50 Años"<br>
+                            &nbsp;&nbsp;WHEN Edad >= 51 AND Edad <= 65 THEN "51-65 Años"<br>
+                            &nbsp;&nbsp;ELSE "Otro"<br>
+                            END
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recordatorio -->
+            <div class="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-4">
+                <i class="fa-solid fa-lightbulb text-amber-500 text-2xl"></i>
+                <div>
+                    <span class="font-bold text-amber-800 block text-sm">¿Sabías que?</span>
+                    <span class="text-xs text-amber-700">Puedes exportar los datos interactivos filtrados de este prototipo web en cualquier momento. Solo usa el buscador de la tabla de registros en la página anterior.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="bg-white border-t border-looker-border py-4 px-6 text-center text-xs text-gray-500 mt-auto">
+        <p>Prototipo Interactivo Analítico para Gestión Humana &copy; 2026 | Desarrollado para simular arquitectura nativa de BI.</p>
+    </footer>
+
+    <!-- MOCK DATA GENERATOR & ENGINE -->
+    <script>
+        // Generador de datos aleatorios pero balanceados para simular los 143 registros.
+        const originalDataset = [];
+        const generos = ['F', 'M'];
+        const escolaridades = ['Especialización', 'Profesional', 'Tecnólogo/Técnico', 'Bachiller'];
+        const vinculaciones = ['Provisionalidad', 'Carrera Adm.', 'Libre Nombramiento'];
+        const viviendas = ['Propia', 'Arriendo', 'Familiar'];
+        const transportes = ['Moto', 'Carro', 'Servicio Público'];
+
+        // Generar 143 registros balanceados
+        for(let i = 1; i <= 143; i++) {
+            // ID Formateado
+            const cod = 'EMP' + String(i).padStart(4, '0');
+            // Género balanceado (~63% Mujeres)
+            const genero = Math.random() < 0.63 ? 'F' : 'M';
+            // Edad balanceada (~25% joven, ~65% mediana edad, ~10% mayor)
+            let edad, rango;
+            const rSeed = Math.random();
+            if(rSeed < 0.25) {
+                edad = Math.floor(Math.random() * (35 - 20 + 1)) + 20;
+                rango = '20-35';
+            } else if (rSeed < 0.90) {
+                edad = Math.floor(Math.random() * (50 - 36 + 1)) + 36;
+                rango = '36-50';
+            } else {
+                edad = Math.floor(Math.random() * (65 - 51 + 1)) + 51;
+                rango = '51-65';
+            }
+
+            // Escolaridad
+            let escolaridad;
+            const escSeed = Math.random();
+            if(escSeed < 0.30) escolaridad = 'Especialización';
+            else if (escSeed < 0.70) escolaridad = 'Profesional';
+            else if (escSeed < 0.92) escolaridad = 'Tecnólogo/Técnico';
+            else escolaridad = 'Bachiller';
+
+            // Vinculación
+            let vinculacion;
+            const vincSeed = Math.random();
+            if(vincSeed < 0.73) vinculacion = 'Provisionalidad';
+            else if (vincSeed < 0.86) vinculacion = 'Carrera Adm.';
+            else vinculacion = 'Libre Nombramiento';
+
+            // Vivienda
+            let vivienda;
+            const vivSeed = Math.random();
+            if(vivSeed < 0.45) vivienda = 'Propia';
+            else if (vivSeed < 0.75) vivienda = 'Arriendo';
+            else vivienda = 'Familiar';
+
+            // Transporte
+            let transporte;
+            const transSeed = Math.random();
+            if(transSeed < 0.52) transporte = 'Moto';
+            else if (transSeed < 0.80) transporte = 'Carro';
+            else transporte = 'Servicio Público';
+
+            // Antigüedad (Años) relacionada con la edad
+            const maxAntiguedad = edad - 18;
+            const antiguedad = parseFloat((Math.random() * maxAntiguedad).toFixed(1));
+
+            // Prepensionado
+            const prepensionado = (genero === 'F' && edad >= 54) || (genero === 'M' && edad >= 59);
+
+            originalDataset.push({
+                codigo: cod,
+                genero,
+                edad,
+                rango,
+                escolaridad,
+                vinculacion,
+                vivienda,
+                transporte,
+                antiguedad,
+                prepensionado
+            });
+        }
+
+        // Estado del Tablero
+        let currentDataset = [...originalDataset];
+        let currentPage = 1;
+        const itemsPerPage = 8;
+
+        // Referencias a instancias de Gráficos de Chart.js
+        let chartEsc, chartEd, chartVinc;
+
+        // Iniciar tableros
+        window.onload = function() {
+            initCharts();
+            applyFilters();
+        }
+
+        // Control de pestañas
+        function switchTab(tabId) {
+            document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-guide').classList.add('hidden');
+            document.getElementById('btn-tab-dashboard').className = 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black';
+            document.getElementById('btn-tab-guide').className = 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black';
+
+            if(tabId === 'dashboard') {
+                document.getElementById('tab-dashboard').classList.remove('hidden');
+                document.getElementById('btn-tab-dashboard').className = 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm';
+            } else {
+                document.getElementById('tab-guide').classList.remove('hidden');
+                document.getElementById('btn-tab-guide').className = 'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm';
+            }
+        }
+
+        // Inicializar Gráficas Vacías
+        function initCharts() {
+            // Chart 1: Escolaridad (Dona)
+            const ctxEsc = document.getElementById('chartEscolaridad').getContext('2d');
+            chartEsc = new Chart(ctxEsc, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Especialización', 'Profesional', 'Tecnólogo/Técnico', 'Bachiller'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#1a73e8', '#12b5cb', '#3f51b5', '#b0bec5'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Edad (Barras)
+            const ctxEd = document.getElementById('chartEdad').getContext('2d');
+            chartEd = new Chart(ctxEd, {
+                type: 'bar',
+                data: {
+                    labels: ['20-35 Años', '36-50 Años', '51-65 Años'],
+                    datasets: [{
+                        label: 'Servidores',
+                        data: [0, 0, 0],
+                        backgroundColor: '#1a73e8',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+
+            // Chart 3: Vinculación (Barras Horizontales)
+            const ctxVinc = document.getElementById('chartVinculacion').getContext('2d');
+            chartVinc = new Chart(ctxVinc, {
+                type: 'bar',
+                data: {
+                    labels: ['Provisionalidad', 'Carrera Adm.', 'Libre Nombramiento'],
+                    datasets: [{
+                        label: 'Servidores',
+                        data: [0, 0, 0],
+                        backgroundColor: '#3f51b5',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        // Restablecer Filtros
+        function resetFilters() {
+            document.getElementById('filter-genero').value = 'Todos';
+            document.getElementById('filter-escolaridad').value = 'Todos';
+            document.getElementById('filter-edad').value = 'Todos';
+            document.getElementById('filter-vinculacion').value = 'Todos';
+            document.getElementById('table-search').value = '';
+            applyFilters();
+        }
+
+        // Aplicar Motores de Filtros
+        function applyFilters() {
+            const fGenero = document.getElementById('filter-genero').value;
+            const fEscolaridad = document.getElementById('filter-escolaridad').value;
+            const fEdad = document.getElementById('filter-edad').value;
+            const fVinculacion = document.getElementById('filter-vinculacion').value;
+            const searchVal = document.getElementById('table-search').value.toLowerCase().trim();
+
+            currentDataset = originalDataset.filter(item => {
+                // Match Genero
+                if (fGenero !== 'Todos' && item.genero !== fGenero) return false;
+                // Match Escolaridad
+                if (fEscolaridad !== 'Todos') {
+                    if (fEscolaridad === 'Tecnólogo/Técnico' && item.escolaridad !== 'Tecnólogo/Técnico') return false;
+                    if (fEscolaridad !== 'Tecnólogo/Técnico' && item.escolaridad !== fEscolaridad) return false;
+                }
+                // Match Rango Edad
+                if (fEdad !== 'Todos' && item.rango !== fEdad) return false;
+                // Match Vinculación
+                if (fVinculacion !== 'Todos' && item.vinculacion !== fVinculacion) return false;
+                // Match Busqueda por ID
+                if (searchVal !== '' && !item.codigo.toLowerCase().includes(searchVal)) return false;
+
+                return true;
+            });
+
+            currentPage = 1;
+            updateDashboard();
+        }
+
+        // Actualizar UI, KPIs, Gráficas y Tabla
+        function updateDashboard() {
+            const total = currentDataset.length;
+            
+            // 1. Recalcular KPIs
+            document.getElementById('kpi-total').innerText = total;
+
+            // % Mujeres
+            const mujeres = currentDataset.filter(i => i.genero === 'F').length;
+            const pctMujeres = total > 0 ? Math.round((mujeres / total) * 100) : 0;
+            document.getElementById('kpi-mujeres').innerText = pctMujeres + '%';
+            document.getElementById('kpi-mujeres-abs').innerText = `${mujeres} Servidoras`;
+
+            // Antigüedad Promedio
+            const totalAnt = currentDataset.reduce((sum, item) => sum + item.antiguedad, 0);
+            const promAnt = total > 0 ? (totalAnt / total).toFixed(1) : '0';
+            document.getElementById('kpi-experiencia').innerText = promAnt;
+
+            // Prepensionados
+            const prepensionados = currentDataset.filter(i => i.prepensionado).length;
+            document.getElementById('kpi-prepensionados').innerText = prepensionados;
+
+            // 2. Gráfica Escolaridad (Dona)
+            const countEsc = { 'Especialización': 0, 'Profesional': 0, 'Tecnólogo/Técnico': 0, 'Bachiller': 0 };
+            currentDataset.forEach(i => { countEsc[i.escolaridad]++ });
+            chartEsc.data.datasets[0].data = [
+                countEsc['Especialización'],
+                countEsc['Profesional'],
+                countEsc['Tecnólogo/Técnico'],
+                countEsc['Bachiller']
+            ];
+            chartEsc.update();
+
+            // 3. Gráfica Edad (Barras)
+            const countEdad = { '20-35': 0, '36-50': 0, '51-65': 0 };
+            currentDataset.forEach(i => { countEdad[i.rango]++ });
+            chartEd.data.datasets[0].data = [
+                countEdad['20-35'],
+                countEdad['36-50'],
+                countEdad['51-65']
+            ];
+            chartEd.update();
+
+            // 4. Gráfica Vinculación (Barras H)
+            const countVinc = { 'Provisionalidad': 0, 'Carrera Adm.': 0, 'Libre Nombramiento': 0 };
+            currentDataset.forEach(i => { countVinc[i.vinculacion]++ });
+            chartVinc.data.datasets[0].data = [
+                countVinc['Provisionalidad'],
+                countVinc['Carrera Adm.'],
+                countVinc['Libre Nombramiento']
+            ];
+            chartVinc.update();
+
+            // 5. Distribución de Calidad de Vida (Subgrupo)
+            const countTrans = { 'Moto': 0, 'Carro': 0, 'Servicio Público': 0 };
+            const countViv = { 'Propia': 0, 'Arriendo': 0, 'Familiar': 0 };
+            currentDataset.forEach(i => {
+                countTrans[i.transporte]++;
+                countViv[i.vivienda]++;
+            });
+
+            // Actualizar porcentajes de Transporte
+            const pctMoto = total > 0 ? Math.round((countTrans['Moto'] / total) * 100) : 0;
+            const pctCarro = total > 0 ? Math.round((countTrans['Carro'] / total) * 100) : 0;
+            const pctPublico = total > 0 ? Math.round((countTrans['Servicio Público'] / total) * 100) : 0;
+
+            document.getElementById('pct-moto').innerText = pctMoto + '%';
+            document.getElementById('bar-moto').style.width = pctMoto + '%';
+            document.getElementById('pct-carro').innerText = pctCarro + '%';
+            document.getElementById('bar-carro').style.width = pctCarro + '%';
+            document.getElementById('pct-publico').innerText = pctPublico + '%';
+            document.getElementById('bar-publico').style.width = pctPublico + '%';
+
+            // Actualizar porcentajes de Vivienda
+            document.getElementById('viv-propia').innerText = total > 0 ? Math.round((countViv['Propia'] / total) * 100) + '%' : '0%';
+            document.getElementById('viv-arriendo').innerText = total > 0 ? Math.round((countViv['Arriendo'] / total) * 100) + '%' : '0%';
+            document.getElementById('viv-familiar').innerText = total > 0 ? Math.round((countViv['Familiar'] / total) * 100) + '%' : '0%';
+
+            // 6. Actualizar la Tabla de Datos
+            renderTable();
+        }
+
+        // Renderizar registros paginados en la tabla
+        function renderTable() {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = currentDataset.slice(startIndex, endIndex);
+
+            document.getElementById('table-count').innerText = `${currentDataset.length} mostrados`;
+
+            if(paginatedItems.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-gray-400">
+                            <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                            No se encontraron registros para los filtros seleccionados.
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('page-info').innerText = 'Mostrando 0 - 0 de 0';
+                document.getElementById('btn-prev').disabled = true;
+                document.getElementById('btn-next').disabled = true;
+                return;
+            }
+
+            paginatedItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition duration-100';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-semibold text-[#1f1f1f]">${item.codigo}</td>
+                    <td class="py-2.5 px-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${item.genero === 'F' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">
+                            ${item.genero === 'F' ? 'Femenino' : 'Masculino'}
+                        </span>
+                    </td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.rango} Años</td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.escolaridad}</td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.vinculacion}</td>
+                    <td class="py-2.5 px-3 text-right text-gray-900 font-medium">${item.antiguedad}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Actualizar info de Paginación
+            const actualEnd = Math.min(endIndex, currentDataset.length);
+            document.getElementById('page-info').innerText = `Mostrando ${startIndex + 1} - ${actualEnd} de ${currentDataset.length}`;
+
+            document.getElementById('btn-prev').disabled = currentPage === 1;
+            document.getElementById('btn-next').disabled = endIndex >= currentDataset.length;
+        }
+
+        function prevPage() {
+            if(currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            if((currentPage * itemsPerPage) < currentDataset.length) {
+                currentPage++;
+                renderTable();
+            }
+        }
+    </script>
+</body>
+</html>
