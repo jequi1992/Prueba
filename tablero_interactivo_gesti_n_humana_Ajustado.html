@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looker Studio - Gestión Humana & SST</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'Open Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        looker: {
+                            blue: '#1a73e8',
+                            dark: '#5f6368',
+                            light: '#f8f9fa',
+                            border: '#dadce0',
+                            accent: '#12b5cb',
+                            indigo: '#3f51b5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-shadow { box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15); }
+        .card-shadow { box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15); }
+        .scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-[#f1f3f4] text-[#3c4043] min-h-screen flex flex-col font-sans">
+
+    <!-- CABECERA ESTILO LOOKER STUDIO -->
+    <header class="bg-white border-b border-looker-border px-6 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-[#e8f0fe] rounded-lg">
+                <i class="fa-solid fa-chart-line text-looker-blue text-2xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs bg-[#f1f3f4] text-[#5f6368] font-bold px-2 py-0.5 rounded">VISTA PREVIA</span>
+                    <span class="text-xs text-gray-500">Actualizado con Nuevas Métricas</span>
+                </div>
+                <h1 class="text-lg font-bold text-[#1f1f1f] flex items-center gap-2">
+                    Dashboard GH & SST - Caracterización Integral de Personal
+                    <span class="text-xs font-normal text-gray-400">v2.0</span>
+                </h1>
+            </div>
+        </div>
+        
+        <!-- PESTAÑAS DE NAVEGACIÓN -->
+        <div class="flex flex-wrap items-center gap-1 bg-gray-100 p-1 rounded-lg">
+            <button onclick="switchTab('dashboard-general')" id="btn-tab-general" class="px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm">
+                <i class="fa-solid fa-house mr-1 sm:mr-2"></i>General & Laboral
+            </button>
+            <button onclick="switchTab('dashboard-bienestar')" id="btn-tab-bienestar" class="px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black">
+                <i class="fa-solid fa-hands-holding-child mr-1 sm:mr-2"></i>Familia & Bienestar
+            </button>
+            <button onclick="switchTab('dashboard-inclusion')" id="btn-tab-inclusion" class="px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black">
+                <i class="fa-solid fa-wheelchair mr-1 sm:mr-2"></i>Inclusión & SST
+            </button>
+            <button onclick="switchTab('guide')" id="btn-tab-guide" class="px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black">
+                <i class="fa-solid fa-book-open mr-1 sm:mr-2"></i>Guía Looker
+            </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="resetFilters()" class="text-sm px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md flex items-center gap-2 border border-looker-border">
+                <i class="fa-solid fa-rotate-right"></i> Restablecer Filtros
+            </button>
+            <a href="https://lookerstudio.google.com/" target="_blank" class="bg-looker-blue text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition duration-150 flex items-center gap-2">
+                Ir a Looker Studio <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- BARRA DE CONTROLES / FILTROS (GENERALES PARA TODAS LAS PESTAÑAS) -->
+    <section class="mx-6 mt-6 bg-white p-4 rounded-lg card-shadow border border-looker-border">
+        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-filter text-looker-blue text-xs"></i>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500">Controles del Tablero (Filtros Globales Interactivos)</h2>
+            </div>
+            <span class="text-xs text-looker-blue font-semibold">Se aplican a todas las vistas</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <!-- Filtro Género -->
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-600 mb-1">Género</label>
+                <select id="filter-genero" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-2 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                    <option value="Todos">Todos</option>
+                    <option value="F">Femenino (F)</option>
+                    <option value="M">Masculino (M)</option>
+                </select>
+            </div>
+            <!-- Filtro Escolaridad -->
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-600 mb-1">Nivel Académico</label>
+                <select id="filter-escolaridad" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-2 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                    <option value="Todos">Todos</option>
+                    <option value="Especialización">Especialización</option>
+                    <option value="Profesional">Profesional</option>
+                    <option value="Tecnólogo/Técnico">Tecnólogo / Técnico</option>
+                    <option value="Bachiller">Bachiller</option>
+                </select>
+            </div>
+            <!-- Filtro Rango Etario -->
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-600 mb-1">Rango Etario</label>
+                <select id="filter-edad" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-2 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                    <option value="Todos">Todos</option>
+                    <option value="20-35">20 - 35 Años</option>
+                    <option value="36-50">36 - 50 Años</option>
+                    <option value="51-65">51 - 65 Años</option>
+                </select>
+            </div>
+            <!-- Filtro Vinculación -->
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-600 mb-1">Vinculación</label>
+                <select id="filter-vinculacion" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-2 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                    <option value="Todos">Todos</option>
+                    <option value="Provisionalidad">Provisionalidad</option>
+                    <option value="Carrera Adm.">Carrera Adm.</option>
+                    <option value="Libre Nombramiento">Libre Nombramiento</option>
+                </select>
+            </div>
+            <!-- Filtro Estado Civil -->
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-600 mb-1">Estado Civil</label>
+                <select id="filter-estadocivil" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-2 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                    <option value="Todos">Todos</option>
+                    <option value="Soltero(a)">Soltero(a)</option>
+                    <option value="Casado(a)">Casado(a)</option>
+                    <option value="Unión Libre">Unión Libre</option>
+                    <option value="Divorciado(a)">Divorciado(a)</option>
+                    <option value="Viudo(a)">Viudo(a)</option>
+                </select>
+            </div>
+            <!-- Filtro Fuero Sindical -->
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-600 mb-1">Fuero Sindical</label>
+                <select id="filter-sindicato" onchange="applyFilters()" class="w-full bg-looker-light border border-looker-border rounded px-2 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                    <option value="Todos">Todos</option>
+                    <option value="Sí">Con Fuero</option>
+                    <option value="No">Sin Fuero</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE KPI CARDS GENERALES -->
+    <section class="mx-6 mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- KPI 1: Total Población -->
+        <div class="bg-white p-4 rounded-lg card-shadow border-t-4 border-t-looker-blue flex items-center justify-between">
+            <div>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400 block">Servidores Activos</span>
+                <span id="kpi-total" class="text-3xl font-extrabold text-slate-800 tracking-tight">143</span>
+                <span class="text-[10px] text-gray-500 block mt-1">Muestra Filtrada</span>
+            </div>
+            <div class="h-10 w-10 bg-blue-50 text-looker-blue rounded-full flex items-center justify-center text-lg">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </div>
+
+        <!-- KPI 2: Madres Cabeza de Familia -->
+        <div class="bg-white p-4 rounded-lg card-shadow border-t-4 border-t-pink-500 flex items-center justify-between">
+            <div>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400 block">Madres Cabeza Fam.</span>
+                <span id="kpi-madres" class="text-3xl font-extrabold text-slate-800 tracking-tight">24</span>
+                <span class="text-[10px] text-pink-600 font-semibold block mt-1" id="kpi-madres-pct">16.7% de la Planta</span>
+            </div>
+            <div class="h-10 w-10 bg-pink-50 text-pink-600 rounded-full flex items-center justify-center text-lg">
+                <i class="fa-solid fa-person-breastfeeding"></i>
+            </div>
+        </div>
+
+        <!-- KPI 3: Sin Hijos -->
+        <div class="bg-white p-4 rounded-lg card-shadow border-t-4 border-t-emerald-500 flex items-center justify-between">
+            <div>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400 block">Servidores Sin Hijos</span>
+                <span id="kpi-sinhijos" class="text-3xl font-extrabold text-slate-800 tracking-tight">49</span>
+                <span class="text-[10px] text-gray-500 block mt-1" id="kpi-sinhijos-pct">34.3% del total</span>
+            </div>
+            <div class="h-10 w-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-lg">
+                <i class="fa-solid fa-baby-carriage"></i>
+            </div>
+        </div>
+
+        <!-- KPI 4: Con Fuero Sindical -->
+        <div class="bg-white p-4 rounded-lg card-shadow border-t-4 border-t-amber-500 flex items-center justify-between">
+            <div>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400 block">Con Fuero Sindical</span>
+                <span id="kpi-fuero" class="text-3xl font-extrabold text-slate-800 tracking-tight">12</span>
+                <span class="text-[10px] text-amber-600 font-medium block mt-1 flex items-center gap-1">
+                    <i class="fa-solid fa-shield-halved"></i> Protección Activa
+                </span>
+            </div>
+            <div class="h-10 w-10 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-lg">
+                <i class="fa-solid fa-gavel"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTENEDOR DE PESTAÑAS -->
+    <div class="p-6 max-w-[1600px] w-full mx-auto flex-grow flex flex-col gap-6">
+
+        <!-- PESTAÑA 1: GENERAL & LABORAL -->
+        <main id="tab-general" class="tab-content flex flex-col gap-6">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfica 1: Escolaridad (Dona) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-graduation-cap text-looker-blue mr-1"></i> Nivel Académico</h3>
+                        <span class="text-xs text-gray-400">Porcentaje</span>
+                    </div>
+                    <div class="flex-grow relative flex items-center justify-center">
+                        <canvas id="chartEscolaridad" class="max-h-[250px]"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica 2: Rango Etario (Barras) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-cake-candles text-looker-blue mr-1"></i> Distribución de Edad</h3>
+                        <span class="text-xs text-gray-400">Cantidad de personas</span>
+                    </div>
+                    <div class="flex-grow relative">
+                        <canvas id="chartEdad"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica 3: Tipo de Vinculación (Barras Horizontales) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-briefcase text-looker-blue mr-1"></i> Tipo de Vinculación</h3>
+                        <span class="text-xs text-gray-400">Volumetría</span>
+                    </div>
+                    <div class="flex-grow relative">
+                        <canvas id="chartVinculacion"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- PESTAÑA 2: FAMILIA & BIENESTAR -->
+        <main id="tab-bienestar" class="tab-content flex flex-col gap-6 hidden">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfica 4: Estado Civil (Pie) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-heart text-pink-500 mr-1"></i> Estado Civil</h3>
+                        <span class="text-xs text-gray-400">Distribución</span>
+                    </div>
+                    <div class="flex-grow relative flex items-center justify-center">
+                        <canvas id="chartEstadoCivil" class="max-h-[250px]"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica 5: Edad de los Hijos / Servidores sin Hijos (Barras) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-child-reaching text-emerald-600 mr-1"></i> Rango Edad de Hijos y Sin Hijos</h3>
+                        <span class="text-xs text-gray-400">Métricas</span>
+                    </div>
+                    <div class="flex-grow relative">
+                        <canvas id="chartHijos"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica 6: Vivienda y Transporte -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-truck-ramp-box text-blue-500 mr-1"></i> Entorno de Calidad de Vida</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-xs text-gray-500 font-semibold block mb-2">Transporte Principal</span>
+                            <div class="space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span>Moto</span><span class="font-bold" id="pct-moto">52%</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="bar-moto" class="bg-teal-500 h-full rounded-full" style="width: 52%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span>Automóvil</span><span class="font-bold" id="pct-carro">28%</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="bar-carro" class="bg-emerald-500 h-full rounded-full" style="width: 28%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1"><span>Servicio Público / Alternativos</span><span class="font-bold" id="pct-publico">20%</span></div>
+                                    <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="bar-publico" class="bg-indigo-500 h-full rounded-full" style="width: 20%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <span class="text-xs text-gray-500 font-semibold block mb-2">Tenencia de Vivienda</span>
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-slate-50 p-2 rounded border border-gray-100">
+                                    <span class="block text-sm font-bold text-slate-700" id="viv-propia">45%</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Propia</span>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded border border-gray-100">
+                                    <span class="block text-sm font-bold text-slate-700" id="viv-arriendo">30%</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Arriendo</span>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded border border-gray-100">
+                                    <span class="block text-sm font-bold text-slate-700" id="viv-familiar">25%</span>
+                                    <span class="text-[10px] text-gray-400 uppercase">Familiar</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- PESTAÑA 3: INCLUSIÓN & SST -->
+        <main id="tab-inclusion" class="tab-content flex flex-col gap-6 hidden">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfica 7: Tipo de Discapacidad (Pie/Dona) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-person-cane text-amber-500 mr-1"></i> Tipo de Discapacidad</h3>
+                        <span class="text-xs text-gray-400">Distribución</span>
+                    </div>
+                    <div class="flex-grow relative flex items-center justify-center">
+                        <canvas id="chartDiscapacidad" class="max-h-[250px]"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfica 8: Tipo de Hobbies (Barras Horizontales) -->
+                <div class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col h-[350px]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-puzzle-piece text-indigo-500 mr-1"></i> Pasatiempos & Hobbies Preferidos</h3>
+                        <span class="text-xs text-gray-400">Volumetría</span>
+                    </div>
+                    <div class="flex-grow relative">
+                        <canvas id="chartHobbies"></canvas>
+                    </div>
+                </div>
+
+                <!-- Alertas e Inclusión Card -->
+                <div class="bg-white p-6 rounded-lg card-shadow border border-looker-border flex flex-col justify-between h-[350px]">
+                    <div>
+                        <h3 class="font-bold text-sm text-[#1f1f1f] mb-3 pb-2 border-b border-gray-100">
+                            <i class="fa-solid fa-circle-exclamation text-amber-500 mr-1"></i> Alertas de Vigilancia Epidemiológica
+                        </h3>
+                        <ul class="text-xs text-gray-600 space-y-3">
+                            <li class="flex gap-2">
+                                <i class="fa-solid fa-circle text-amber-500 text-[8px] mt-1.5 shrink-0"></i>
+                                <span><strong>Población Prepensionada:</strong> Se deben estructurar capacitaciones sobre transición al retiro laboral.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <i class="fa-solid fa-circle text-indigo-500 text-[8px] mt-1.5 shrink-0"></i>
+                                <span><strong>Inclusión y Ajustes Razonables:</strong> Servidores registrados con discapacidades requieren evaluaciones de puesto de trabajo individuales por ARL.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <i class="fa-solid fa-circle text-pink-500 text-[8px] mt-1.5 shrink-0"></i>
+                                <span><strong>Madres Cabeza de Familia:</strong> Fomentar horarios flexibles o teletrabajo parcial para mejorar equilibrio vida-trabajo.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-3 bg-indigo-50 border border-indigo-100 rounded text-xs text-indigo-800">
+                        <strong>Comité de Convivencia:</strong> Articular programas de bienestar físico enfocados en los Hobbies más representativos obtenidos.
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- SECCIÓN: TABLA DE DETALLE DE REGISTROS -->
+        <section class="bg-white p-5 rounded-lg card-shadow border border-looker-border flex flex-col justify-between min-h-[400px]">
+            <div>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-2 border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-sm text-[#1f1f1f]"><i class="fa-solid fa-list-check text-looker-blue mr-1"></i> Registros de Servidores</h3>
+                        <span id="table-count" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">143 mostrados</span>
+                    </div>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="table-search" oninput="applyFilters()" placeholder="Buscar por ID..." class="w-full bg-looker-light border border-looker-border rounded-md pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-looker-blue">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-gray-400 text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Contenedor scrollable de tabla con nuevas columnas solicitadas -->
+                <div class="overflow-x-auto overflow-y-auto max-h-[300px] scrollbar border border-gray-100 rounded">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase text-[9px] tracking-wider border-b border-gray-100 sticky top-0 z-10">
+                                <th class="py-2.5 px-3 font-semibold">Cod. Empleado</th>
+                                <th class="py-2.5 px-3 font-semibold">Género</th>
+                                <th class="py-2.5 px-3 font-semibold">Edad</th>
+                                <th class="py-2.5 px-3 font-semibold">Estado Civil</th>
+                                <th class="py-2.5 px-3 font-semibold">Madre Cab.</th>
+                                <th class="py-2.5 px-3 font-semibold">Hijos (Rango)</th>
+                                <th class="py-2.5 px-3 font-semibold">Vinculación</th>
+                                <th class="py-2.5 px-3 font-semibold">Fuero Sindical</th>
+                                <th class="py-2.5 px-3 font-semibold">Discapacidad</th>
+                                <th class="py-2.5 px-3 font-semibold">Hobbie Principal</th>
+                                <th class="py-2.5 px-3 font-semibold text-right">Antigüedad (Años)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="text-xs divide-y divide-gray-50">
+                            <!-- Filas renderizadas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Paginación de Tabla -->
+            <div class="flex items-center justify-between pt-4 mt-4 border-t border-gray-100 text-xs text-gray-500">
+                <span id="page-info">Mostrando 1 - 8 de 143</span>
+                <div class="flex gap-1">
+                    <button onclick="prevPage()" class="p-1 px-2 border border-looker-border rounded hover:bg-slate-100 text-gray-600 transition disabled:opacity-50" id="btn-prev"><i class="fa-solid fa-angle-left"></i></button>
+                    <button onclick="nextPage()" class="p-1 px-2 border border-looker-border rounded hover:bg-slate-100 text-gray-600 transition disabled:opacity-50" id="btn-next"><i class="fa-solid fa-angle-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- PÁGINA / GUÍA DE CONEXIÓN A LOOKER STUDIO REAL -->
+    <main id="tab-guide" class="p-6 max-w-[1200px] w-full mx-auto flex-grow flex flex-col gap-6 hidden">
+        <section class="bg-white p-8 rounded-lg card-shadow border border-looker-border">
+            <h2 class="text-2xl font-bold text-[#1f1f1f] mb-6 flex items-center gap-3 border-b border-gray-100 pb-4">
+                <i class="fa-solid fa-book-open text-looker-blue"></i>
+                Guía de Conexión: Estructura de Nuevos Campos en Looker Studio
+            </h2>
+
+            <p class="text-sm text-gray-600 mb-6">
+                Para consolidar las nuevas 6 variables en tu reporte real de Looker Studio de manera idéntica a este prototipo web interactivo, implementa los siguientes pasos en tu fuente de datos:
+            </p>
+
+            <div class="space-y-6">
+                <!-- Paso 1 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0 text-sm">1</div>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">Estructurar las columnas en la Hoja de Cálculo</h3>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Añade estas columnas exactamente con este tipo de valor en tu archivo de Google Sheets:
+                        </p>
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-2 font-mono text-[11px] text-gray-700 overflow-x-auto leading-relaxed">
+                            <strong>Madre_Cabeza_Familia</strong>: TEXTO (Valores: "Sí", "No", "No Aplica") <br>
+                            <strong>Estado_Civil</strong>: TEXTO (Valores: "Soltero(a)", "Casado(a)", "Unión Libre", "Divorciado(a)", "Viudo(a)") <br>
+                            <strong>Rango_Edad_Hijos</strong>: TEXTO (Valores: "Primera Infancia (0-5)", "Infancia (6-12)", "Adolescencia (13-17)", "Adultos (18+)", "Sin Hijos") <br>
+                            <strong>Tiene_Fuero_Sindical</strong>: TEXTO (Valores: "Sí", "No") <br>
+                            <strong>Tipo_Discapacidad</strong>: TEXTO (Valores: "Ninguna", "Física", "Visual", "Auditiva", "Psicosocial") <br>
+                            <strong>Hobbie_Principal</strong>: TEXTO (Valores: "Deportes", "Lectura", "Cine/TV", "Música", "Viajes", "Manualidades")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0 text-sm">2</div>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">Cálculo dinámico de Madre Cabeza de Familia</h3>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Si solo tienes el dato para las mujeres pero quieres evitar que califique a hombres, utiliza esta fórmula para crear un campo calculado en tu informe:
+                        </p>
+                        <div class="bg-slate-900 text-slate-100 rounded p-3 mt-2 font-mono text-[11px] overflow-x-auto">
+                            CASE <br>
+                            &nbsp;&nbsp;WHEN Genero = "M" THEN "No Aplica"<br>
+                            &nbsp;&nbsp;WHEN Genero = "F" AND Madre_Cabeza = "Sí" THEN "Sí"<br>
+                            &nbsp;&nbsp;ELSE "No"<br>
+                            END
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 3 -->
+                <div class="flex gap-4">
+                    <div class="h-8 w-8 rounded-full bg-blue-100 text-looker-blue font-bold flex items-center justify-center shrink-0 text-sm">3</div>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">Métrica de Fuero Sindical y Discapacidad</h3>
+                        <p class="text-xs text-gray-600 mt-1">
+                            Crea una Tarjeta de Resultados para el <strong>Fuero Sindical</strong> y otra para el total de <strong>Servidores con alguna discapacidad</strong>, aplicando este filtro:
+                        </p>
+                        <ul class="list-disc list-inside text-xs text-gray-600 mt-2 space-y-1 pl-4">
+                            <li><strong>Filtro Fuero:</strong> <code class="bg-gray-100 px-1 rounded font-mono text-[10px]">Incluir Tiene_Fuero_Sindical = "Sí"</code></li>
+                            <li><strong>Filtro Discapacidad:</strong> <code class="bg-gray-100 px-1 rounded font-mono text-[10px]">Excluir Tipo_Discapacidad = "Ninguna"</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recordatorio -->
+            <div class="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-4">
+                <i class="fa-solid fa-lightbulb text-amber-500 text-2xl"></i>
+                <div>
+                    <span class="font-bold text-amber-800 block text-sm">Consejo de Diseño BI</span>
+                    <span class="text-xs text-amber-700 block mt-0.5">Utiliza la paleta de colores corporativos consistentes (por ejemplo: azul para variables generales, rosa para analítica de familia y morado para seguridad/salud laboral) para facilitar la lectura del reporte institucional.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="bg-white border-t border-looker-border py-4 px-6 text-center text-xs text-gray-500 mt-auto">
+        <p>Prototipo Interactivo Analítico para Gestión Humana &copy; 2026 | Diseñado bajo lineamientos dinámicos de Business Intelligence.</p>
+    </footer>
+
+    <!-- GENERADOR DE DATOS DE SIMULACIÓN INTEGRADA (143 SERVIDORES) -->
+    <script>
+        const originalDataset = [];
+        const generos = ['F', 'M'];
+        const escolaridades = ['Especialización', 'Profesional', 'Tecnólogo/Técnico', 'Bachiller'];
+        const vinculaciones = ['Provisionalidad', 'Carrera Adm.', 'Libre Nombramiento'];
+        const viviendas = ['Propia', 'Arriendo', 'Familiar'];
+        const transportes = ['Moto', 'Carro', 'Servicio Público'];
+        const estadosCiviles = ['Soltero(a)', 'Casado(a)', 'Unión Libre', 'Divorciado(a)', 'Viudo(a)'];
+        const discapacidades = ['Ninguna', 'Física', 'Visual', 'Auditiva', 'Psicosocial'];
+        const hobbies = ['Deportes', 'Lectura', 'Cine/TV', 'Música', 'Viajes', 'Manualidades'];
+
+        // Generar 143 registros balanceados y correlacionados
+        for(let i = 1; i <= 143; i++) {
+            const cod = 'EMP' + String(i).padStart(4, '0');
+            const genero = Math.random() < 0.63 ? 'F' : 'M';
+            
+            // Edad balanceada
+            let edad, rango;
+            const rSeed = Math.random();
+            if(rSeed < 0.25) {
+                edad = Math.floor(Math.random() * (35 - 20 + 1)) + 20;
+                rango = '20-35';
+            } else if (rSeed < 0.90) {
+                edad = Math.floor(Math.random() * (50 - 36 + 1)) + 36;
+                rango = '36-50';
+            } else {
+                edad = Math.floor(Math.random() * (65 - 51 + 1)) + 51;
+                rango = '51-65';
+            }
+
+            // Escolaridad
+            let escolaridad;
+            const escSeed = Math.random();
+            if(escSeed < 0.30) escolaridad = 'Especialización';
+            else if (escSeed < 0.70) escolaridad = 'Profesional';
+            else if (escSeed < 0.92) escolaridad = 'Tecnólogo/Técnico';
+            else escolaridad = 'Bachiller';
+
+            // Vinculación
+            let vinculacion;
+            const vincSeed = Math.random();
+            if(vincSeed < 0.73) vinculacion = 'Provisionalidad';
+            else if (vincSeed < 0.86) vinculacion = 'Carrera Adm.';
+            else vinculacion = 'Libre Nombramiento';
+
+            // Vivienda
+            let vivienda;
+            const vivSeed = Math.random();
+            if(vivSeed < 0.45) vivienda = 'Propia';
+            else if (vivSeed < 0.75) vivienda = 'Arriendo';
+            else vivienda = 'Familiar';
+
+            // Transporte
+            let transporte;
+            const transSeed = Math.random();
+            if(transSeed < 0.52) transporte = 'Moto';
+            else if (transSeed < 0.80) transporte = 'Carro';
+            else transporte = 'Servicio Público';
+
+            // Antigüedad (Años)
+            const maxAntiguedad = edad - 18;
+            const antiguedad = parseFloat((Math.random() * (maxAntiguedad > 30 ? 30 : maxAntiguedad)).toFixed(1));
+
+            // 1) Madre cabeza de familia (Solo aplica a mujeres, ~25% de ellas son cabeza de familia)
+            let madreCabeza = 'No Aplica';
+            if (genero === 'F') {
+                madreCabeza = Math.random() < 0.28 ? 'Sí' : 'No';
+            }
+
+            // 2) Estado Civil
+            let estadoCivil;
+            const ecSeed = Math.random();
+            if (ecSeed < 0.35) estadoCivil = 'Soltero(a)';
+            else if (ecSeed < 0.70) estadoCivil = 'Casado(a)';
+            else if (ecSeed < 0.88) estadoCivil = 'Unión Libre';
+            else if (ecSeed < 0.97) estadoCivil = 'Divorciado(a)';
+            else estadoCivil = 'Viudo(a)';
+
+            // Si es madre cabeza de familia y está casada, ajustamos para mantener coherencia lógica
+            if (madreCabeza === 'Sí' && estadoCivil === 'Casado(a)') {
+                estadoCivil = Math.random() < 0.5 ? 'Soltero(a)' : 'Divorciado(a)';
+            }
+
+            // 3) Rango de edad de los hijos / Sin hijos (Correlacionado con edad)
+            let rangoEdadHijos = 'Sin Hijos';
+            let tieneHijos = false;
+            // Mayor edad incrementa probabilidad de tener hijos
+            const probHijos = edad < 30 ? 0.25 : (edad < 45 ? 0.75 : 0.88);
+            if (Math.random() < probHijos) {
+                tieneHijos = true;
+                // Asignar rango etario de los hijos basado en la edad del servidor
+                if (edad <= 30) {
+                    rangoEdadHijos = 'Primera Infancia (0-5)';
+                } else if (edad <= 40) {
+                    rangoEdadHijos = Math.random() < 0.5 ? 'Infancia (6-12)' : 'Primera Infancia (0-5)';
+                } else if (edad <= 52) {
+                    rangoEdadHijos = Math.random() < 0.6 ? 'Adolescencia (13-17)' : 'Infancia (6-12)';
+                } else {
+                    rangoEdadHijos = 'Adultos (18+)';
+                }
+            }
+
+            // Si es Madre Cabeza de Familia, lógicamente DEBE tener hijos
+            if (madreCabeza === 'Sí' && rangoEdadHijos === 'Sin Hijos') {
+                rangoEdadHijos = edad < 38 ? 'Primera Infancia (0-5)' : 'Infancia (6-12)';
+            }
+
+            // 4) Fuero Sindical (~8% de probabilidad global)
+            const fueroSindical = Math.random() < 0.08 ? 'Sí' : 'No';
+
+            // 5) Tipo de Discapacidad (~88% ninguna, restando físicas, sensoriales, etc.)
+            let tipoDiscapacidad = 'Ninguna';
+            const discSeed = Math.random();
+            if (discSeed < 0.05) tipoDiscapacidad = 'Física';
+            else if (discSeed < 0.09) tipoDiscapacidad = 'Visual';
+            else if (discSeed < 0.11) tipoDiscapacidad = 'Auditiva';
+            else if (discSeed < 0.12) tipoDiscapacidad = 'Psicosocial';
+
+            // 6) Tipo de Hobbie
+            const hobbiePrincipal = hobbies[Math.floor(Math.random() * hobbies.length)];
+
+            // Prepensionado
+            const prepensionado = (genero === 'F' && edad >= 54) || (genero === 'M' && edad >= 59);
+
+            originalDataset.push({
+                codigo: cod,
+                genero,
+                edad,
+                rango,
+                escolaridad,
+                vinculacion,
+                vivienda,
+                transporte,
+                antiguedad,
+                prepensionado,
+                madreCabeza,
+                estadoCivil,
+                rangoEdadHijos,
+                fueroSindical,
+                tipoDiscapacidad,
+                hobbiePrincipal
+            });
+        }
+
+        // Estado de control del dashboard
+        let currentDataset = [...originalDataset];
+        let currentPage = 1;
+        const itemsPerPage = 8;
+
+        // Referencias a Charts
+        let chartEsc, chartEd, chartVinc, chartEstCivil, chartHijosEdad, chartDisc, chartHob;
+
+        window.onload = function() {
+            initCharts();
+            applyFilters();
+        }
+
+        // Navegación de Pestañas
+        function switchTab(tabId) {
+            // Ocultar todos los contenedores de pestañas
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-guide').classList.add('hidden');
+
+            // Resetear estilos de todos los botones de pestañas
+            const tabs = ['general', 'bienestar', 'inclusion', 'guide'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`btn-tab-${t}`);
+                if (btn) btn.className = 'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-black';
+            });
+
+            // Mostrar el contenedor seleccionado y destacar botón
+            if (tabId === 'dashboard-general') {
+                document.getElementById('tab-general').classList.remove('hidden');
+                document.getElementById('btn-tab-general').className = 'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm';
+            } else if (tabId === 'dashboard-bienestar') {
+                document.getElementById('tab-bienestar').classList.remove('hidden');
+                document.getElementById('btn-tab-bienestar').className = 'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm';
+            } else if (tabId === 'dashboard-inclusion') {
+                document.getElementById('tab-inclusion').classList.remove('hidden');
+                document.getElementById('btn-tab-inclusion').className = 'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm';
+            } else if (tabId === 'guide') {
+                document.getElementById('tab-guide').classList.remove('hidden');
+                document.getElementById('btn-tab-guide').className = 'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 bg-white text-looker-blue shadow-sm';
+            }
+        }
+
+        // Inicializar todas las gráficas de Chart.js (Existentes + Nuevas)
+        function initCharts() {
+            // Chart 1: Escolaridad
+            const ctxEsc = document.getElementById('chartEscolaridad').getContext('2d');
+            chartEsc = new Chart(ctxEsc, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Especialización', 'Profesional', 'Tecnólogo/Técnico', 'Bachiller'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#1a73e8', '#12b5cb', '#3f51b5', '#b0bec5'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                }
+            });
+
+            // Chart 2: Edad
+            const ctxEd = document.getElementById('chartEdad').getContext('2d');
+            chartEd = new Chart(ctxEd, {
+                type: 'bar',
+                data: {
+                    labels: ['20-35 Años', '36-50 Años', '51-65 Años'],
+                    datasets: [{
+                        label: 'Servidores',
+                        data: [0, 0, 0],
+                        backgroundColor: '#1a73e8',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+
+            // Chart 3: Vinculación
+            const ctxVinc = document.getElementById('chartVinculacion').getContext('2d');
+            chartVinc = new Chart(ctxVinc, {
+                type: 'bar',
+                data: {
+                    labels: ['Provisionalidad', 'Carrera Adm.', 'Libre Nombramiento'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: '#3f51b5',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+
+            // Chart 4: Estado Civil (Dona)
+            const ctxEst = document.getElementById('chartEstadoCivil').getContext('2d');
+            chartEstCivil = new Chart(ctxEst, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Soltero(a)', 'Casado(a)', 'Unión Libre', 'Divorciado(a)', 'Viudo(a)'],
+                    datasets: [{
+                        data: [0,0,0,0,0],
+                        backgroundColor: ['#f43f5e', '#ec4899', '#fb7185', '#fda4af', '#fecdd3'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                }
+            });
+
+            // Chart 5: Rango Edad Hijos y Sin Hijos (Barras)
+            const ctxHijos = document.getElementById('chartHijos').getContext('2d');
+            chartHijosEdad = new Chart(ctxHijos, {
+                type: 'bar',
+                data: {
+                    labels: ['0-5 Años', '6-12 Años', '13-17 Años', '18+ Años', 'Sin Hijos'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+
+            // Chart 6: Discapacidad (Pie)
+            const ctxDisc = document.getElementById('chartDiscapacidad').getContext('2d');
+            chartDisc = new Chart(ctxDisc, {
+                type: 'pie',
+                data: {
+                    labels: ['Ninguna', 'Física', 'Visual', 'Auditiva', 'Psicosocial'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#e2e8f0', '#f59e0b', '#d97706', '#b45309', '#78350f'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                }
+            });
+
+            // Chart 7: Hobbies (Barras H)
+            const ctxHob = document.getElementById('chartHobbies').getContext('2d');
+            chartHob = new Chart(ctxHob, {
+                type: 'bar',
+                data: {
+                    labels: hobbies,
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0, 0],
+                        backgroundColor: '#6366f1',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+        }
+
+        // Restablecer todos los filtros
+        function resetFilters() {
+            document.getElementById('filter-genero').value = 'Todos';
+            document.getElementById('filter-escolaridad').value = 'Todos';
+            document.getElementById('filter-edad').value = 'Todos';
+            document.getElementById('filter-vinculacion').value = 'Todos';
+            document.getElementById('filter-estadocivil').value = 'Todos';
+            document.getElementById('filter-sindicato').value = 'Todos';
+            document.getElementById('table-search').value = '';
+            applyFilters();
+        }
+
+        // Evaluar condiciones de filtros
+        function applyFilters() {
+            const fGen = document.getElementById('filter-genero').value;
+            const fEsc = document.getElementById('filter-escolaridad').value;
+            const fEdad = document.getElementById('filter-edad').value;
+            const fVinc = document.getElementById('filter-vinculacion').value;
+            const fEst = document.getElementById('filter-estadocivil').value;
+            const fSind = document.getElementById('filter-sindicato').value;
+            const searchVal = document.getElementById('table-search').value.toLowerCase().trim();
+
+            currentDataset = originalDataset.filter(item => {
+                if (fGen !== 'Todos' && item.genero !== fGen) return false;
+                if (fEsc !== 'Todos' && item.escolaridad !== fEsc) return false;
+                if (fEdad !== 'Todos' && item.rango !== fEdad) return false;
+                if (fVinc !== 'Todos' && item.vinculacion !== fVinc) return false;
+                if (fEst !== 'Todos' && item.estadoCivil !== fEst) return false;
+                if (fSind !== 'Todos' && item.fueroSindical !== fSind) return false;
+                if (searchVal !== '' && !item.codigo.toLowerCase().includes(searchVal)) return false;
+                return true;
+            });
+
+            currentPage = 1;
+            updateDashboard();
+        }
+
+        // Recalcular métricas en base al dataset filtrado
+        function updateDashboard() {
+            const total = currentDataset.length;
+            document.getElementById('kpi-total').innerText = total;
+
+            // 1) Madres Cabeza de Familia
+            const madres = currentDataset.filter(i => i.madreCabeza === 'Sí').length;
+            const pctMadres = total > 0 ? ((madres / total) * 100).toFixed(1) : '0.0';
+            document.getElementById('kpi-madres').innerText = madres;
+            document.getElementById('kpi-madres-pct').innerText = `${pctMadres}% de la Planta`;
+
+            // 2) Sin Hijos
+            const sinHijos = currentDataset.filter(i => i.rangoEdadHijos === 'Sin Hijos').length;
+            const pctSinHijos = total > 0 ? ((sinHijos / total) * 100).toFixed(1) : '0.0';
+            document.getElementById('kpi-sinhijos').innerText = sinHijos;
+            document.getElementById('kpi-sinhijos-pct').innerText = `${pctSinHijos}% del total`;
+
+            // 3) Fuero Sindical
+            const fuero = currentDataset.filter(i => i.fueroSindical === 'Sí').length;
+            document.getElementById('kpi-fuero').innerText = fuero;
+
+            // --- ACTUALIZAR CHARTS ---
+            
+            // Chart 1: Escolaridad
+            const countsEsc = { 'Especialización': 0, 'Profesional': 0, 'Tecnólogo/Técnico': 0, 'Bachiller': 0 };
+            currentDataset.forEach(i => countsEsc[i.escolaridad]++);
+            chartEsc.data.datasets[0].data = [
+                countsEsc['Especialización'],
+                countsEsc['Profesional'],
+                countsEsc['Tecnólogo/Técnico'],
+                countsEsc['Bachiller']
+            ];
+            chartEsc.update();
+
+            // Chart 2: Rango Etario
+            const countsEdad = { '20-35': 0, '36-50': 0, '51-65': 0 };
+            currentDataset.forEach(i => countsEdad[i.rango]++);
+            chartEd.data.datasets[0].data = [countsEdad['20-35'], countsEdad['36-50'], countsEdad['51-65']];
+            chartEd.update();
+
+            // Chart 3: Vinculación
+            const countsVinc = { 'Provisionalidad': 0, 'Carrera Adm.': 0, 'Libre Nombramiento': 0 };
+            currentDataset.forEach(i => countsVinc[i.vinculacion]++);
+            chartVinc.data.datasets[0].data = [
+                countsVinc['Provisionalidad'],
+                countsVinc['Carrera Adm.'],
+                countsVinc['Libre Nombramiento']
+            ];
+            chartVinc.update();
+
+            // Chart 4: Estado Civil
+            const countsEst = { 'Soltero(a)': 0, 'Casado(a)': 0, 'Unión Libre': 0, 'Divorciado(a)': 0, 'Viudo(a)': 0 };
+            currentDataset.forEach(i => countsEst[i.estadoCivil]++);
+            chartEstCivil.data.datasets[0].data = [
+                countsEst['Soltero(a)'],
+                countsEst['Casado(a)'],
+                countsEst['Unión Libre'],
+                countsEst['Divorciado(a)'],
+                countsEst['Viudo(a)']
+            ];
+            chartEstCivil.update();
+
+            // Chart 5: Rango Edad Hijos & Sin Hijos
+            const countsHijos = {
+                'Primera Infancia (0-5)': 0,
+                'Infancia (6-12)': 0,
+                'Adolescencia (13-17)': 0,
+                'Adultos (18+)': 0,
+                'Sin Hijos': 0
+            };
+            currentDataset.forEach(i => countsHijos[i.rangoEdadHijos]++);
+            chartHijosEdad.data.datasets[0].data = [
+                countsHijos['Primera Infancia (0-5)'],
+                countsHijos['Infancia (6-12)'],
+                countsHijos['Adolescencia (13-17)'],
+                countsHijos['Adultos (18+)'],
+                countsHijos['Sin Hijos']
+            ];
+            chartHijosEdad.update();
+
+            // Chart 6: Discapacidad
+            const countsDisc = { 'Ninguna': 0, 'Física': 0, 'Visual': 0, 'Auditiva': 0, 'Psicosocial': 0 };
+            currentDataset.forEach(i => countsDisc[i.tipoDiscapacidad]++);
+            chartDisc.data.datasets[0].data = [
+                countsDisc['Ninguna'],
+                countsDisc['Física'],
+                countsDisc['Visual'],
+                countsDisc['Auditiva'],
+                countsDisc['Psicosocial']
+            ];
+            chartDisc.update();
+
+            // Chart 7: Hobbies
+            const countsHob = {};
+            hobbies.forEach(h => countsHob[h] = 0);
+            currentDataset.forEach(i => {
+                if (countsHob[i.hobbiePrincipal] !== undefined) countsHob[i.hobbiePrincipal]++;
+            });
+            chartHob.data.datasets[0].data = hobbies.map(h => countsHob[h]);
+            chartHob.update();
+
+            // --- VARIABLES ADICIONALES (VIVIENDA & TRANSPORTE) ---
+            const countTrans = { 'Moto': 0, 'Carro': 0, 'Servicio Público': 0 };
+            const countViv = { 'Propia': 0, 'Arriendo': 0, 'Familiar': 0 };
+            currentDataset.forEach(i => {
+                countTrans[i.transporte]++;
+                countViv[i.vivienda]++;
+            });
+
+            const pctMoto = total > 0 ? Math.round((countTrans['Moto'] / total) * 100) : 0;
+            const pctCarro = total > 0 ? Math.round((countTrans['Carro'] / total) * 100) : 0;
+            const pctPublico = total > 0 ? Math.round((countTrans['Servicio Público'] / total) * 100) : 0;
+
+            document.getElementById('pct-moto').innerText = pctMoto + '%';
+            document.getElementById('bar-moto').style.width = pctMoto + '%';
+            document.getElementById('pct-carro').innerText = pctCarro + '%';
+            document.getElementById('bar-carro').style.width = pctCarro + '%';
+            document.getElementById('pct-publico').innerText = pctPublico + '%';
+            document.getElementById('bar-publico').style.width = pctPublico + '%';
+
+            document.getElementById('viv-propia').innerText = total > 0 ? Math.round((countViv['Propia'] / total) * 100) + '%' : '0%';
+            document.getElementById('viv-arriendo').innerText = total > 0 ? Math.round((countViv['Arriendo'] / total) * 100) + '%' : '0%';
+            document.getElementById('viv-familiar').innerText = total > 0 ? Math.round((countViv['Familiar'] / total) * 100) + '%' : '0%';
+
+            renderTable();
+        }
+
+        // Renderizar la tabla con los nuevos campos solicitados
+        function renderTable() {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = currentDataset.slice(startIndex, endIndex);
+
+            document.getElementById('table-count').innerText = `${currentDataset.length} mostrados`;
+
+            if(paginatedItems.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="py-8 text-center text-gray-400">
+                            <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                            No se encontraron registros para los filtros seleccionados.
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('page-info').innerText = 'Mostrando 0 - 0 de 0';
+                document.getElementById('btn-prev').disabled = true;
+                document.getElementById('btn-next').disabled = true;
+                return;
+            }
+
+            paginatedItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition duration-100';
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-semibold text-[#1f1f1f]">${item.codigo}</td>
+                    <td class="py-2.5 px-3">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${item.genero === 'F' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">
+                            ${item.genero === 'F' ? 'Femenino' : 'Masculino'}
+                        </span>
+                    </td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.edad} años</td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.estadoCivil}</td>
+                    <td class="py-2.5 px-3">
+                        <span class="font-bold ${item.madreCabeza === 'Sí' ? 'text-pink-600' : 'text-gray-400'}">${item.madreCabeza}</span>
+                    </td>
+                    <td class="py-2.5 px-3 text-gray-600 text-[11px]">${item.rangoEdadHijos}</td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.vinculacion}</td>
+                    <td class="py-2.5 px-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] ${item.fueroSindical === 'Sí' ? 'bg-amber-100 text-amber-800 font-semibold' : 'text-gray-400'}">${item.fueroSindical}</span>
+                    </td>
+                    <td class="py-2.5 px-3 text-gray-600">${item.tipoDiscapacidad}</td>
+                    <td class="py-2.5 px-3 text-gray-600 font-medium">${item.hobbiePrincipal}</td>
+                    <td class="py-2.5 px-3 text-right text-gray-900 font-semibold">${item.antiguedad}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            const actualEnd = Math.min(endIndex, currentDataset.length);
+            document.getElementById('page-info').innerText = `Mostrando ${startIndex + 1} - ${actualEnd} de ${currentDataset.length}`;
+
+            document.getElementById('btn-prev').disabled = currentPage === 1;
+            document.getElementById('btn-next').disabled = endIndex >= currentDataset.length;
+        }
+
+        function prevPage() {
+            if(currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            if((currentPage * itemsPerPage) < currentDataset.length) {
+                currentPage++;
+                renderTable();
+            }
+        }
+    </script>
+</body>
+</html>
