@@ -18,14 +18,14 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f3f4f6;
+      background-color: #EFEFED; /* Color corporativo de fondo */
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: #EFEFED;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
@@ -34,41 +34,46 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    /* Estilos personalizados para enfoque y selección con los colores corporativos */
+    .focus-corp:focus {
+      border-color: #f6d82f !important;
+      box-shadow: 0 0 0 2px rgba(246, 216, 47, 0.4) !important;
+    }
   </style>
 </head>
 <body class="text-slate-800 antialiased">
 
-  <!-- TOP BRANDING BAR (Estilo Looker Studio) -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+  <!-- TOP BRANDING BAR (Estilo Looker Studio con Rojo Corporativo #c4222d) -->
+  <header class="bg-[#c4222d] text-white border-b border-red-800 sticky top-0 z-40 px-6 py-3 flex flex-wrap items-center justify-between gap-4 shadow-md">
     <div class="flex items-center space-x-3">
-      <div class="bg-blue-600 text-white p-2 rounded-lg shadow-sm">
+      <div class="bg-[#f6d82f] text-slate-900 p-2 rounded-lg shadow-sm">
         <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="text-xs font-semibold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">FOR-CSC-007</span>
-          <span class="text-xs text-slate-400">v2.0</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-900 bg-[#f6d82f] px-2 py-0.5 rounded">FOR-CSC-007</span>
+          <span class="text-xs text-red-100">v2.0</span>
         </div>
-        <h1 class="text-lg font-bold text-slate-900">Seguimiento y Control de PQRSDF - Secretaría de la Mujer y Equidad de Género</h1>
+        <h1 class="text-lg font-bold text-white">Seguimiento y Control de PQRSDF - Secretaría de la Mujer y Equidad de Género</h1>
       </div>
     </div>
     
     <div class="flex items-center space-x-3">
-      <button onclick="openAddModal()" class="flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow-sm transition-all">
+      <button onclick="openAddModal()" class="flex items-center space-x-1.5 bg-[#f6d82f] hover:bg-yellow-400 text-slate-900 px-3.5 py-2 rounded-lg text-sm font-bold shadow-sm transition-all">
         <i data-lucide="plus-circle" class="w-4 h-4"></i>
         <span>Radicar PQRSDF</span>
       </button>
-      <button onclick="exportToCSV()" class="flex items-center space-x-1.5 border border-slate-300 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-lg text-sm font-medium transition-all">
+      <button onclick="exportToCSV()" class="flex items-center space-x-1.5 border border-red-400 hover:bg-red-800 text-white px-3.5 py-2 rounded-lg text-sm font-semibold transition-all">
         <i data-lucide="download" class="w-4 h-4"></i>
         <span>Exportar Datos</span>
       </button>
-      <div class="h-6 w-px bg-slate-200"></div>
-      <div class="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
-        <button class="bg-white text-slate-800 font-medium text-xs px-3 py-1.5 rounded shadow-sm flex items-center space-x-1">
-          <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-600"></i>
+      <div class="h-6 w-px bg-red-800"></div>
+      <div class="flex items-center space-x-1 bg-red-800/50 rounded-lg p-1">
+        <button class="bg-white text-slate-900 font-bold text-xs px-3 py-1.5 rounded shadow-sm flex items-center space-x-1">
+          <i data-lucide="eye" class="w-3.5 h-3.5 text-[#c4222d]"></i>
           <span>Vista</span>
         </button>
-        <button onclick="alert('Modo edición deshabilitado en este reporte público.')" class="text-slate-500 hover:text-slate-800 text-xs px-3 py-1.5 rounded flex items-center space-x-1">
+        <button onclick="alert('Modo edición deshabilitado en este reporte público.')" class="text-red-100 hover:text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1">
           <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
           <span>Editar</span>
         </button>
@@ -83,10 +88,10 @@
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
       <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
         <div class="flex items-center space-x-2 text-slate-600">
-          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-blue-500"></i>
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#c4222d]"></i>
           <span class="text-sm font-semibold uppercase tracking-wider">Controles y Filtros Dinámicos</span>
         </div>
-        <button onclick="resetFilters()" class="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1">
+        <button onclick="resetFilters()" class="text-xs text-[#c4222d] hover:text-red-800 font-bold flex items-center space-x-1">
           <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
           <span>Restablecer Filtros</span>
         </button>
@@ -97,16 +102,16 @@
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Rango de Radicación</label>
           <div class="flex items-center space-x-2">
-            <input type="date" id="filter-date-start" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <input type="date" id="filter-date-start" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none focus-corp">
             <span class="text-xs text-slate-400">a</span>
-            <input type="date" id="filter-date-end" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <input type="date" id="filter-date-end" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none focus-corp">
           </div>
         </div>
 
         <!-- Filtro Canal -->
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Canal de Entrada</label>
-          <select id="filter-canal" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          <select id="filter-canal" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none focus-corp">
             <option value="">Todos los canales</option>
             <option value="PÁGINA WEB">Página Web</option>
             <option value="VENTANILLA">Ventanilla</option>
@@ -118,7 +123,7 @@
         <!-- Filtro Tipo Requerimiento -->
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tipo de Requerimiento</label>
-          <select id="filter-tipo" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          <select id="filter-tipo" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none focus-corp">
             <option value="">Todos los tipos</option>
             <option value="PETICIÓN">Petición</option>
             <option value="QUEJA">Queja</option>
@@ -132,7 +137,7 @@
         <!-- Filtro Dependencia -->
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Dependencia Asignada</label>
-          <select id="filter-dependencia" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          <select id="filter-dependencia" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none focus-corp">
             <option value="">Todas las dependencias</option>
             <option value="Jurídica">Jurídica</option>
             <option value="Secretaría de la Mujer y Equidad de Género">Secretaría de la Mujer</option>
@@ -147,7 +152,7 @@
         <!-- Filtro Estado -->
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Estado de Gestión</label>
-          <select id="filter-estado" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          <select id="filter-estado" onchange="applyFilters()" class="w-full text-xs border border-slate-300 rounded-lg px-2.5 py-2 outline-none focus-corp">
             <option value="">Todos los estados</option>
             <option value="Cerrado con solución">Cerrado con Solución</option>
             <option value="En trámite">En Trámite</option>
@@ -159,19 +164,19 @@
     <!-- ZONA B: KPI SUMMARY CARDS -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       <!-- Tarjeta 1: Total Radicados -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200 border-l-4 border-l-[#f6d82f]">
         <div class="space-y-1">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Radicados</span>
           <div class="text-3xl font-extrabold text-slate-950" id="kpi-total">0</div>
           <span class="text-[11px] text-slate-400">PQRSDF totales registradas</span>
         </div>
-        <div class="bg-blue-50 p-3 rounded-xl text-blue-600">
+        <div class="bg-yellow-50 p-3 rounded-xl text-yellow-600">
           <i data-lucide="folder-open" class="w-7 h-7"></i>
         </div>
       </div>
 
       <!-- Tarjeta 2: Abiertos (En trámite) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200 border-l-4 border-l-amber-500">
         <div class="space-y-1">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">En Trámite (Abiertos)</span>
           <div class="text-3xl font-extrabold text-amber-600" id="kpi-tramite">0</div>
@@ -183,7 +188,7 @@
       </div>
 
       <!-- Tarjeta 3: Cerrados -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200 border-l-4 border-l-emerald-500">
         <div class="space-y-1">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Casos Resueltos</span>
           <div class="text-3xl font-extrabold text-emerald-600" id="kpi-resueltos">0</div>
@@ -195,13 +200,13 @@
       </div>
 
       <!-- Tarjeta 4: % de Oportunidad (ANS) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-all duration-200 border-l-4 border-l-[#c4222d]">
         <div class="space-y-1">
           <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Oportunidad (ANS)</span>
-          <div class="text-3xl font-extrabold text-blue-700" id="kpi-ans">0%</div>
+          <div class="text-3xl font-extrabold text-[#c4222d]" id="kpi-ans">0%</div>
           <span class="text-[11px] text-slate-400">Cerrados dentro del tiempo legal</span>
         </div>
-        <div class="bg-indigo-50 p-3 rounded-xl text-indigo-600">
+        <div class="bg-red-50 p-3 rounded-xl text-[#c4222d]">
           <i data-lucide="shield-check" class="w-7 h-7"></i>
         </div>
       </div>
@@ -214,7 +219,7 @@
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-            <i data-lucide="trending-up" class="w-4 h-4 text-blue-500"></i>
+            <i data-lucide="trending-up" class="w-4 h-4 text-[#c4222d]"></i>
             <span>Histórico Mensual de Radicación</span>
           </h3>
           <span class="text-xs text-slate-400">Total casos por mes</span>
@@ -228,7 +233,7 @@
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-500"></i>
+            <i data-lucide="pie-chart" class="w-4 h-4 text-amber-500"></i>
             <span>Tipos de Requerimientos</span>
           </h3>
           <span class="text-xs text-slate-400">Distribución de Solicitudes</span>
@@ -242,7 +247,7 @@
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-            <i data-lucide="building-2" class="w-4 h-4 text-indigo-500"></i>
+            <i data-lucide="building-2" class="w-4 h-4 text-[#c4222d]"></i>
             <span>PQRSDF por Oficina o Secretaría</span>
           </h3>
           <span class="text-xs text-slate-400">Distribución de carga laboral</span>
@@ -256,7 +261,7 @@
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-            <i data-lucide="share-2" class="w-4 h-4 text-amber-500"></i>
+            <i data-lucide="share-2" class="w-4 h-4 text-emerald-500"></i>
             <span>Canales de Entrada</span>
           </h3>
           <span class="text-xs text-slate-400">% de radicación</span>
@@ -273,7 +278,7 @@
       <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="space-y-1">
           <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-            <i data-lucide="table-properties" class="w-4 h-4 text-blue-500"></i>
+            <i data-lucide="table-properties" class="w-4 h-4 text-[#c4222d]"></i>
             <span>Bandeja de Control de PQRSDF (Registros FOR-CSC-007)</span>
           </h3>
           <p class="text-xs text-slate-500">Listado interactivo de PQRSDF con semáforo de vencimientos (ANS)</p>
@@ -282,7 +287,7 @@
         <!-- Buscador y Acciones -->
         <div class="flex items-center space-x-3 max-w-md w-full md:w-auto">
           <div class="relative w-full md:w-72">
-            <input type="text" id="table-search" oninput="applyFilters()" placeholder="Buscar radicado, nombre o asunto..." class="w-full text-xs border border-slate-300 rounded-lg pl-8 pr-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <input type="text" id="table-search" oninput="applyFilters()" placeholder="Buscar radicado, nombre o asunto..." class="w-full text-xs border border-slate-300 rounded-lg pl-8 pr-3 py-2 outline-none focus-corp">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5"></i>
           </div>
         </div>
@@ -292,7 +297,7 @@
       <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="border-b border-slate-200 bg-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <tr class="border-b border-slate-200 bg-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider font-semibold">
               <th class="py-3 px-4">N° Radicado</th>
               <th class="py-3 px-4">F. Radicación</th>
               <th class="py-3 px-4">Canal</th>
@@ -331,8 +336,8 @@
     <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
-          <i data-lucide="file-text" class="text-blue-500 w-5 h-5"></i>
-          <span>Detalle de Radicado <span id="modal-rad-id" class="text-blue-600"></span></span>
+          <i data-lucide="file-text" class="text-[#c4222d] w-5 h-5"></i>
+          <span>Detalle de Radicado <span id="modal-rad-id" class="text-[#c4222d]"></span></span>
         </h3>
         <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -371,7 +376,7 @@
         <div class="border-t border-slate-100 col-span-2 my-2"></div>
         <div>
           <span class="block text-[10px] text-slate-400 uppercase font-semibold">Fecha de Vencimiento Legal</span>
-          <span id="modal-rad-vence" class="font-medium text-red-600">-</span>
+          <span id="modal-rad-vence" class="font-bold text-[#c4222d]">-</span>
         </div>
         <div>
           <span class="block text-[10px] text-slate-400 uppercase font-semibold">Días hábiles restantes</span>
@@ -379,7 +384,7 @@
         </div>
         <div>
           <span class="block text-[10px] text-slate-400 uppercase font-semibold">Oficina Asignada</span>
-          <span id="modal-rad-direcciona" class="font-medium text-indigo-700">-</span>
+          <span id="modal-rad-direcciona" class="font-bold text-[#c4222d]">-</span>
         </div>
         <div>
           <span class="block text-[10px] text-slate-400 uppercase font-semibold">Responsable de Gestión</span>
@@ -410,7 +415,7 @@
     <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
-          <i data-lucide="plus-circle" class="text-blue-600 w-5 h-5"></i>
+          <i data-lucide="plus-circle" class="text-[#c4222d] w-5 h-5"></i>
           <span>Nuevo Radicado de Entrada (FOR-CSC-007)</span>
         </h3>
         <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600">
@@ -421,11 +426,11 @@
       <form id="add-form" onsubmit="submitForm(event)" class="grid grid-cols-2 gap-4 text-xs">
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Fecha Radicación *</label>
-          <input type="date" id="form-fecha-rad" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <input type="date" id="form-fecha-rad" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Canal de Entrada *</label>
-          <select id="form-canal" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <select id="form-canal" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
             <option value="PÁGINA WEB">Página Web</option>
             <option value="VENTANILLA">Ventanilla</option>
             <option value="CORREO CORRESPONDENCIA">Correo Correspondencia</option>
@@ -434,7 +439,7 @@
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tipo de Requerimiento *</label>
-          <select id="form-tipo" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <select id="form-tipo" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
             <option value="PETICIÓN">Petición</option>
             <option value="QUEJA">Queja</option>
             <option value="RECLAMO">Reclamo</option>
@@ -445,34 +450,34 @@
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombres y Apellidos *</label>
-          <input type="text" id="form-nombre" required placeholder="Nombre del peticionario" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <input type="text" id="form-nombre" required placeholder="Nombre del peticionario" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Cédula / Identificación *</label>
-          <input type="number" id="form-identificacion" required placeholder="Número" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <input type="number" id="form-identificacion" required placeholder="Número" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Correo Electrónico *</label>
-          <input type="email" id="form-email" required placeholder="correo@ejemplo.com" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <input type="email" id="form-email" required placeholder="correo@ejemplo.com" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Teléfono</label>
-          <input type="number" id="form-telefono" placeholder="Número de celular" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <input type="number" id="form-telefono" placeholder="Número de celular" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Anexos ?</label>
-          <select id="form-anexos" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <select id="form-anexos" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
             <option value="NO">No</option>
             <option value="SI">Sí</option>
           </select>
         </div>
         <div class="col-span-2">
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Asunto de Solicitud *</label>
-          <textarea id="form-asunto" required rows="2" placeholder="Describa el requerimiento o inconformidad..." class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+          <textarea id="form-asunto" required rows="2" placeholder="Describa el requerimiento o inconformidad..." class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp"></textarea>
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Direcciona a (Secretaría) *</label>
-          <select id="form-direcciona" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <select id="form-direcciona" required class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
             <option value="Jurídica">Jurídica</option>
             <option value="Secretaría de la Mujer y Equidad de Género">Secretaría de la Mujer</option>
             <option value="Secretaría de Desarrollo Social">Desarrollo Social</option>
@@ -484,32 +489,32 @@
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Responsable Asignado</label>
-          <input type="text" id="form-responsable" placeholder="Funcionario a cargo" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus:ring-1 focus:ring-blue-500">
+          <input type="text" id="form-responsable" placeholder="Funcionario a cargo" class="w-full border border-slate-300 rounded-lg p-2 outline-none focus-corp">
         </div>
         <div class="col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-3">
           <span class="block text-[10px] font-bold text-slate-700 uppercase">Gestión de Respuesta Inicial (Opcional)</span>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-[9px] font-semibold text-slate-500 mb-1">Fecha Respuesta</label>
-              <input type="date" id="form-fecha-resp" class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-blue-500">
+              <input type="date" id="form-fecha-resp" class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus-corp">
             </div>
             <div>
               <label class="block text-[9px] font-semibold text-slate-500 mb-1">Estado del Proceso</label>
-              <select id="form-estado" class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-blue-500">
+              <select id="form-estado" class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus-corp">
                 <option value="En trámite">En trámite</option>
                 <option value="Cerrado con solución">Cerrado con solución</option>
               </select>
             </div>
             <div class="col-span-2">
               <label class="block text-[9px] font-semibold text-slate-500 mb-1">Contenido de Respuesta</label>
-              <textarea id="form-respuesta" rows="2" placeholder="Respuesta formal entregada al peticionario..." class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+              <textarea id="form-respuesta" rows="2" placeholder="Respuesta formal entregada al peticionario..." class="w-full border border-slate-300 bg-white rounded-lg p-1.5 outline-none focus-corp"></textarea>
             </div>
           </div>
         </div>
 
         <div class="col-span-2 flex justify-end space-x-2 pt-2 border-t border-slate-100">
           <button type="button" onclick="closeAddModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-semibold text-xs">Cancelar</button>
-          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm">Guardar y Radicar</button>
+          <button type="submit" class="bg-[#c4222d] hover:bg-red-800 text-white px-5 py-2 rounded-lg font-bold text-xs shadow-sm">Guardar y Radicar</button>
         </div>
       </form>
     </div>
@@ -558,7 +563,7 @@
         respuesta: "Se revisó la solicitud y se dio respuesta definitiva de fondo enviada al correo registrado.",
         estado: "Cerrado con solución",
         fechaRespuesta: "2026-03-12",
-        fechaVencimiento: "2026-03-27"
+        fechaVencimiento: "2026-03-23" // 10 días hábiles
       },
       {
         radicado: "PQRS-2026-0997",
@@ -576,7 +581,7 @@
         respuesta: "Se revisó la solicitud y se dio respuesta definitiva de fondo enviada al correo registrado.",
         estado: "Cerrado con solución",
         fechaRespuesta: "2026-01-15",
-        fechaVencimiento: "2026-01-30"
+        fechaVencimiento: "2026-01-26" // 10 días hábiles (teniendo en cuenta festivo del 12/Ene)
       },
       {
         radicado: "PQRS-2026-0998",
@@ -594,7 +599,7 @@
         respuesta: "Se procedió a la revisión técnica del sistema de ventilación de la oficina correspondiente y se agendó mantenimiento correctivo.",
         estado: "Cerrado con solución",
         fechaRespuesta: "2026-03-10",
-        fechaVencimiento: "2026-03-19"
+        fechaVencimiento: "2026-03-19" // 15 días hábiles
       },
       {
         radicado: "PQRS-2026-0999",
@@ -612,7 +617,7 @@
         respuesta: "Se aprobó el cronograma de capacitaciones y se envió la invitación formal con las fechas para las veredas priorizadas.",
         estado: "Cerrado con solución",
         fechaRespuesta: "2026-01-22",
-        fechaVencimiento: "2026-01-29"
+        fechaVencimiento: "2026-01-29" // 15 días hábiles (con festivo del 12/Ene)
       },
       {
         radicado: "PQRS-2026-1000",
@@ -630,7 +635,7 @@
         respuesta: "",
         estado: "En trámite",
         fechaRespuesta: "",
-        fechaVencimiento: "2026-03-08"
+        fechaVencimiento: "2026-03-09" // 15 días hábiles
       },
       {
         radicado: "PQRS-2026-1001",
@@ -647,7 +652,7 @@
         responsable: "Oficina de Control Interno",
         respuesta: "",
         estado: "En trámite",
-        fechaVencimiento: "2026-03-22",
+        fechaVencimiento: "2026-03-20", // 15 días hábiles (con festivo del 23/Mar)
         fechaRespuesta: ""
       },
       {
@@ -666,7 +671,7 @@
         respuesta: "Se remitió la felicitación formal a la funcionaria de salud y se anexó copia a su hoja de vida por su destacado desempeño.",
         estado: "Cerrado con solución",
         fechaRespuesta: "2026-03-18",
-        fechaVencimiento: "2026-04-02"
+        fechaVencimiento: "2026-03-27" // 10 días hábiles (con festivo del 23/Mar)
       },
       {
         radicado: "PQRS-2026-1003",
@@ -683,7 +688,7 @@
         responsable: "Beatriz Elena Osorio",
         respuesta: "",
         estado: "En trámite",
-        fechaVencimiento: "2026-04-10",
+        fechaVencimiento: "2026-04-13", // 15 días hábiles (con festivos Semana Santa 2, 3 de Abr)
         fechaRespuesta: ""
       },
       {
@@ -701,7 +706,7 @@
         responsable: "Ing. Mauricio Restrepo",
         respuesta: "",
         estado: "En trámite",
-        fechaVencimiento: "2026-04-08",
+        fechaVencimiento: "2026-04-10", // 15 días hábiles (con festivo 23/Mar y Semana Santa 2, 3 de Abr)
         fechaRespuesta: ""
       },
       {
@@ -720,7 +725,7 @@
         respuesta: "Se realizó el envío inmediato del inventario de insumos prioritarios y se reforzó el control de stock mensual.",
         estado: "Cerrado con solución",
         fechaRespuesta: "2026-02-28",
-        fechaVencimiento: "2026-03-03"
+        fechaVencimiento: "2026-03-03" // 15 días hábiles
       }
     ];
 
@@ -894,12 +899,12 @@
           datasets: [{
             label: 'PQRSDF Radicadas',
             data: conteoMeses,
-            borderColor: '#1a73e8',
-            backgroundColor: 'rgba(26, 115, 232, 0.08)',
+            borderColor: '#c4222d', /* Color corporativo de la línea */
+            backgroundColor: 'rgba(196, 34, 45, 0.08)',
             fill: true,
             tension: 0.35,
             borderWidth: 2.5,
-            pointBackgroundColor: '#1a73e8',
+            pointBackgroundColor: '#c4222d',
             pointRadius: 4
           }]
         },
@@ -908,7 +913,7 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+            y: { beginAtZero: true, grid: { color: '#e5e7eb' }, ticks: { stepSize: 1 } },
             x: { grid: { display: false } }
           }
         }
@@ -927,7 +932,7 @@
           labels: Object.keys(tiposMap),
           datasets: [{
             data: Object.values(tiposMap),
-            backgroundColor: ['#1A73E8', '#FBBC04', '#EA4335', '#34A853', '#A142F4', '#24B6F7'],
+            backgroundColor: ['#c4222d', '#f6d82f', '#475569', '#10b981', '#a855f7', '#06b6d4'],
             borderWidth: 1.5,
             hoverOffset: 4
           }]
@@ -960,8 +965,8 @@
           labels: Object.keys(depMap),
           datasets: [{
             data: Object.values(depMap),
-            backgroundColor: 'rgba(99, 102, 241, 0.85)',
-            hoverBackgroundColor: '#4f46e5',
+            backgroundColor: 'rgba(196, 34, 45, 0.85)', /* Rojo corporativo */
+            hoverBackgroundColor: '#c4222d',
             borderRadius: 6,
             barThickness: 18
           }]
@@ -972,7 +977,7 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } },
+            x: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#e5e7eb' } },
             y: { grid: { display: false }, ticks: { font: { size: 9.5 } } }
           }
         }
@@ -991,7 +996,7 @@
           labels: Object.keys(canalMap),
           datasets: [{
             data: Object.values(canalMap),
-            backgroundColor: ['#0d9488', '#0284c7', '#4f46e5', '#f59e0b'],
+            backgroundColor: ['#c4222d', '#f6d82f', '#4b5563', '#10b981'],
             borderWidth: 1
           }]
         },
@@ -1079,7 +1084,7 @@
         const row = document.createElement('tr');
         row.className = "hover:bg-slate-50 transition-colors";
         row.innerHTML = `
-          <td class="py-3 px-4 font-bold text-blue-700">${item.radicado}</td>
+          <td class="py-3 px-4 font-bold text-slate-800">${item.radicado}</td>
           <td class="py-3 px-4 whitespace-nowrap">${item.fechaRadicacion}</td>
           <td class="py-3 px-4"><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold">${item.canal}</span></td>
           <td class="py-3 px-4"><span class="font-bold text-[10px] text-slate-600">${item.tipo}</span></td>
@@ -1089,13 +1094,13 @@
           </td>
           <td class="py-3 px-4 truncate max-w-xs font-normal" title="${item.asunto}">${item.asunto}</td>
           <td class="py-3 px-4">
-            <div class="font-semibold text-[10px] text-indigo-700">${item.direcciona.replace("Secretaría de ", "")}</div>
+            <div class="font-semibold text-[10px] text-slate-700">${item.direcciona.replace("Secretaría de ", "")}</div>
             <div class="text-[10px] text-slate-400">${item.responsable || "Sin asignar"}</div>
           </td>
           <td class="py-3 px-4"><span class="text-[10px] px-2.5 py-1 rounded-full font-semibold ${alertaClase}">${alertaTexto}</span></td>
           <td class="py-3 px-4"><span class="text-[10px] px-2 py-1 rounded font-bold ${estadoClase}">${item.estado}</span></td>
           <td class="py-3 px-4">
-            <button onclick="viewDetails('${item.radicado}')" class="text-blue-600 hover:text-blue-800 font-bold hover:underline flex items-center space-x-0.5">
+            <button onclick="viewDetails('${item.radicado}')" class="text-[#c4222d] hover:text-red-800 font-bold hover:underline flex items-center space-x-0.5">
               <i data-lucide="eye" class="w-3.5 h-3.5"></i>
               <span>Ver</span>
             </button>
@@ -1185,12 +1190,18 @@
       const estado = document.getElementById('form-estado').value;
       const respuestaDesc = document.getElementById('form-respuesta').value;
 
-      // Calcular fecha de vencimiento basándonos en Leyes Colombianas (15 días hábiles promedio para peticiones)
-      let terminosLegales = 15;
-      if (tipo === "SUGERENCIA" || tipo === "FELICITACIÓN") terminosLegales = 10;
-      if (tipo === "QUEJA" || tipo === "RECLAMO") terminosLegales = 15;
-      if (tipo === "PETICIÓN") terminosLegales = 15;
-      if (tipo === "DENUNCIA") terminosLegales = 30;
+      // Calcular fecha de vencimiento según el tipo de mecanismo legal (Ley 1755 de 2015 en Colombia)
+      let terminosLegales = 15; // Término general por defecto (Peticiones, Quejas, Reclamos, Denuncias)
+      
+      if (tipo === "SUGERENCIA" || tipo === "FELICITACIÓN") {
+        terminosLegales = 10; // Plazo preferencial para sugerencias y felicitaciones
+      } else if (tipo === "PETICIÓN") {
+        // En caso de que se determine que es petición de información / copias de documentos son 10 días,
+        // pero se mantiene el estándar general de 15 días hábiles para requerimientos de fondo complejos.
+        terminosLegales = 15; 
+      } else if (tipo === "QUEJA" || tipo === "RECLAMO" || tipo === "DENUNCIA") {
+        terminosLegales = 15; // Plazo estándar legal de quejas, reclamos y denuncias administrativas
+      }
 
       const fVencimiento = addBusinessDays(fRad, terminosLegales);
 
@@ -1224,11 +1235,11 @@
       applyFilters();
       closeAddModal();
 
-      // Alerta amigable en la interfaz
+      // Alerta amigable en la interfaz (Con Rojo Corporativo)
       const toast = document.createElement('div');
       toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 z-50 transform transition-all duration-300";
       toast.innerHTML = `
-        <i data-lucide="check-circle-2" class="text-emerald-400 w-5 h-5"></i>
+        <i data-lucide="check-circle-2" class="text-[#f6d82f] w-5 h-5"></i>
         <div class="text-xs">
           <p class="font-bold">¡Radicación Exitosa!</p>
           <p class="text-[10px] text-slate-300">Asignado el radicado ${nuevoRadicado}</p>
