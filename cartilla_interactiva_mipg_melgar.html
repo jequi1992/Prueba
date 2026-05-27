@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartilla MIPG - Alcaldía de Melgar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        melgarYellow: '#f6d82f',
+                        melgarRed: '#c4222d',
+                        melgarGray: '#EFEFED',
+                        melgarDark: '#1A1A1A',
+                        melgarGreen: '#1e7a3d'
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        title: ['Fredoka One', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .page-transition {
+            transition: all 0.4s ease-in-out;
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .iguana-shadow {
+            filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.2));
+        }
+    </style>
+</head>
+<body class="bg-melgarGray font-sans text-melgarDark min-h-screen flex flex-col justify-between">
+
+    <!-- Encabezado Institucional -->
+    <header class="bg-white border-b-4 border-melgarYellow shadow-md py-3 px-4 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <!-- Escudo de Melgar o representación gráfica simplificada en SVG -->
+                <svg class="h-12 w-12 text-melgarRed" viewBox="0 0 100 100" fill="currentColor">
+                    <rect x="20" y="10" width="60" height="80" rx="10" fill="#c4222d"/>
+                    <path d="M50 15 L80 40 L50 90 L20 40 Z" fill="#f6d82f" opacity="0.9"/>
+                    <circle cx="50" cy="45" r="15" fill="#1e7a3d"/>
+                    <path d="M45 45 L50 35 L55 45 L50 55 Z" fill="white"/>
+                </svg>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-tight text-melgarRed uppercase">Alcaldía de Melgar</h1>
+                    <p class="text-xs font-semibold text-gray-500">Tolima | Secretaría de Planeación y TIC</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-melgarYellow/10 px-4 py-2 rounded-full border border-melgarYellow">
+                <span class="w-3 h-3 rounded-full bg-melgarRed animate-pulse"></span>
+                <span class="text-xs font-bold text-melgarRed uppercase tracking-wider">MIPG Melgar en Acción</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal - Contenedor de la Cartilla -->
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 lg:p-8 flex flex-col items-center justify-center">
+        
+        <!-- Tarjeta de la Cartilla -->
+        <div class="bg-white rounded-3xl shadow-2xl border-2 border-gray-100 w-full overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+            
+            <!-- Barra Lateral de Navegación / Índice Rápido -->
+            <aside class="bg-melgarDark text-white w-full md:w-64 p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-800">
+                <div>
+                    <div class="flex items-center gap-2 mb-6">
+                        <i class="fa-solid fa-book-open text-melgarYellow text-2xl"></i>
+                        <h2 class="font-title text-xl text-melgarYellow">Menú Cartilla</h2>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <button onclick="goToPage(1)" id="btn-page-1" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 bg-melgarRed text-white font-semibold transition">
+                            <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs">1</span>
+                            Portada
+                        </button>
+                        <button onclick="goToPage(2)" id="btn-page-2" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">2</span>
+                            Introducción
+                        </button>
+                        <button onclick="goToPage(3)" id="btn-page-3" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">3</span>
+                            Objetivos
+                        </button>
+                        <button onclick="goToPage(4)" id="btn-page-4" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">4</span>
+                            Principios (I)
+                        </button>
+                        <button onclick="goToPage(5)" id="btn-page-5" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">5</span>
+                            Principios (II)
+                        </button>
+                        <button onclick="goToPage(6)" id="btn-page-6" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">6</span>
+                            Modelo de Gestión
+                        </button>
+                        <button onclick="goToPage(7)" id="btn-page-7" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">7</span>
+                            Ciclo PHVA Melgar
+                        </button>
+                        <button onclick="goToPage(8)" id="btn-page-8" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">8</span>
+                            Las 7 Dimensiones
+                        </button>
+                        <button onclick="goToPage(9)" id="btn-page-9" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">9</span>
+                            Glosario
+                        </button>
+                        <button onclick="goToPage(10)" id="btn-page-10" class="w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition">
+                            <span class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">10</span>
+                            Gualí Trivia & Certificado
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Info de la Mascota -->
+                <div class="mt-6 pt-4 border-t border-gray-800 text-center">
+                    <p class="text-xs text-gray-400">Te acompaña en tu lectura:</p>
+                    <p class="text-sm font-bold text-melgarYellow mt-1"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> ¡GUALÍ!</p>
+                    <p class="text-[10px] text-gray-500">Iguana de la Excelencia y Gestión</p>
+                </div>
+            </aside>
+
+            <!-- Sección de la Cartilla - Dinámica -->
+            <div class="flex-grow p-6 lg:p-10 flex flex-col justify-between relative min-h-[500px]">
+                
+                <!-- PÁGINA 1: PORTADA -->
+                <div id="page-content-1" class="page-transition block">
+                    <div class="text-center space-y-6">
+                        <span class="bg-melgarRed text-white font-bold text-xs uppercase px-4 py-2 rounded-full tracking-widest shadow-md">Cartilla Institucional</span>
+                        <h2 class="font-title text-4xl lg:text-5xl text-melgarRed leading-tight">
+                            ¡GUALÍ TE CUENTA!
+                        </h2>
+                        <h3 class="font-extrabold text-xl lg:text-2xl text-melgarYellow text-shadow bg-melgarDark inline-block px-6 py-2 rounded-xl">
+                            Cómo el MIPG transforma a Melgar
+                        </h3>
+                        <p class="text-gray-600 max-w-md mx-auto text-sm lg:text-base leading-relaxed">
+                            Descubre cómo el Modelo Integrado de Planeación y Gestión optimiza los procesos internos para brindar el mejor servicio a toda nuestra comunidad melgarense.
+                        </p>
+                        
+                        <!-- Ilustración Central de Gualí -->
+                        <div class="relative flex justify-center py-4">
+                            <!-- SVG Gualí Portada (Iguana carismática con gafas naranjas) -->
+                            <div class="w-64 h-64 bg-melgarYellow rounded-full flex items-center justify-center relative overflow-hidden shadow-inner border-4 border-melgarRed iguana-shadow">
+                                <svg viewBox="0 0 200 200" class="w-48 h-48">
+                                    <!-- Fondo círculos decorativos -->
+                                    <circle cx="100" cy="100" r="80" fill="#f6d82f" />
+                                    <!-- Cresta verde de la iguana -->
+                                    <path d="M80 30 Q100 15 120 30 T160 30" fill="none" stroke="#1e7a3d" stroke-width="12" stroke-linecap="round"/>
+                                    <!-- Cabeza iguana -->
+                                    <path d="M60 120 Q50 60 100 60 T140 120 Q120 150 100 150 T60 120 Z" fill="#4ade80" />
+                                    <!-- Ojos -->
+                                    <circle cx="85" cy="95" r="14" fill="white" />
+                                    <circle cx="115" cy="95" r="14" fill="white" />
+                                    <circle cx="85" cy="95" r="6" fill="black" />
+                                    <circle cx="115" cy="95" r="6" fill="black" />
+                                    <!-- Gafas de Gualí (Estilo moderno naranja del Tolima) -->
+                                    <rect x="68" y="85" width="30" height="20" rx="4" fill="none" stroke="#f97316" stroke-width="5" />
+                                    <rect x="102" y="85" width="30" height="20" rx="4" fill="none" stroke="#f97316" stroke-width="5" />
+                                    <line x1="98" y1="95" x2="102" y2="95" stroke="#f97316" stroke-width="5" />
+                                    <!-- Sonrisa -->
+                                    <path d="M85 125 Q100 140 115 125" fill="none" stroke="#166534" stroke-width="4" stroke-linecap="round" />
+                                    <!-- Mejillas rosadas -->
+                                    <circle cx="73" cy="120" r="5" fill="#f43f5e" opacity="0.6"/>
+                                    <circle cx="127" cy="120" r="5" fill="#f43f5e" opacity="0.6"/>
+                                    <!-- Detalle Escamas -->
+                                    <path d="M100 70 Q105 75 100 80" fill="none" stroke="#166534" stroke-width="2" />
+                                </svg>
+                                <!-- Sombrero Tolimense Paja -->
+                                <path d="M60 55 C60 40 140 40 140 55" stroke="#d97706" stroke-width="8" fill="#fef08a" />
+                            </div>
+                            <div class="absolute bottom-0 bg-white px-4 py-1.5 rounded-full border border-gray-200 text-xs font-bold shadow-md flex items-center gap-1">
+                                <span class="text-melgarRed">¡Hola, soy Gualí!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 2: INTRODUCCIÓN -->
+                <div id="page-content-2" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">2</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Introducción</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div class="space-y-4">
+                                <div class="bg-melgarYellow/10 border-l-4 border-melgarYellow p-4 rounded-r-xl">
+                                    <p class="text-sm font-semibold text-gray-700 italic">
+                                        "Gualí es nuestra iguana de la fauna del Sumapaz y nace del concepto de reflejar el compromiso diario de la Alcaldía de Melgar con una gestión pública de excelencia, calidez y transparencia."
+                                    </p>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    La **Oficina de Planeación y TIC**, en articulación con el área de Comunicaciones de la **Alcaldía de Melgar**, diseñó esta estrategia de apropiación de nuestro **Modelo Integrado de Planeación y Gestión (MIPG)**.
+                                </p>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    A través de esta cartilla lúdica y didáctica, queremos que todos los servidores de la administración conozcan cómo engranar su trabajo con los objetivos institucionales de nuestro municipio turístico.
+                                </p>
+                            </div>
+                            <!-- Ilustración Gualí Leyendo -->
+                            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex flex-col items-center justify-center">
+                                <svg viewBox="0 0 200 200" class="w-40 h-40 iguana-shadow">
+                                    <circle cx="100" cy="100" r="90" fill="#EFEFED"/>
+                                    <!-- Cuerpo y brazos de Gualí sosteniendo libro -->
+                                    <rect x="50" y="110" width="100" height="80" rx="20" fill="#1e7a3d" />
+                                    <!-- Cabeza -->
+                                    <path d="M70 100 Q60 50 100 50 T130 100 Z" fill="#4ade80" />
+                                    <!-- Cresta -->
+                                    <path d="M85 35 Q100 20 115 35" fill="none" stroke="#c4222d" stroke-width="8" stroke-linecap="round" />
+                                    <circle cx="85" cy="80" r="8" fill="white" /><circle cx="115" cy="80" r="8" fill="white" />
+                                    <circle cx="85" cy="80" r="4" fill="black" /><circle cx="115" cy="80" r="4" fill="black" />
+                                    <!-- Libro abierto -->
+                                    <path d="M60 140 L100 150 L140 140 L150 110 L100 120 L50 110 Z" fill="#f6d82f" stroke="#c4222d" stroke-width="3" />
+                                    <path d="M100 120 L100 150" stroke="#c4222d" stroke-width="2" />
+                                    <text x="65" y="125" font-size="8" fill="#c4222d" font-weight="bold">MIPG</text>
+                                    <text x="110" y="125" font-size="8" fill="#1e7a3d" font-weight="bold">MELGAR</text>
+                                </svg>
+                                <span class="text-xs font-semibold text-gray-500 mt-2">¡Apropiemos el modelo con alegría!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 3: OBJETIVOS DEL MIPG -->
+                <div id="page-content-3" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">3</span>
+                            <h2 class="font-title text-2xl text-melgarRed">¿Cuáles son los Objetivos de nuestro MIPG?</h2>
+                        </div>
+                        
+                        <div class="bg-melgarYellow/10 border-l-4 border-melgarYellow p-4 rounded-xl">
+                            <h3 class="font-bold text-melgarRed text-sm uppercase">Objetivo General</h3>
+                            <p class="text-xs text-gray-700 mt-1 leading-relaxed">
+                                Generar lineamientos sistemáticos de gestión municipal en Melgar mediante la autoevaluación, implementación y monitoreo continuo de nuestras acciones, logrando aprendizaje organizacional continuo y generando lecciones aprendidas valiosas para nuestros servidores y ciudadanos.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-start gap-2.5">
+                                <span class="bg-melgarRed text-white p-1 rounded text-xs"><i class="fa-solid fa-people-carry-box"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-melgarDark">Fortalecer el Talento Humano</h4>
+                                    <p class="text-[11px] text-gray-600 mt-0.5">Potenciar el liderazgo de los funcionarios de Melgar bajo principios de integridad y legalidad.</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-start gap-2.5">
+                                <span class="bg-melgarGreen text-white p-1 rounded text-xs"><i class="fa-solid fa-bolt"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-melgarDark">Operación Ágil y Sencilla</h4>
+                                    <p class="text-[11px] text-gray-600 mt-0.5">Simplificar procesos para ofrecer trámites eficientes y de alta calidad a melgarenses y turistas.</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-start gap-2.5">
+                                <span class="bg-melgarYellow text-melgarDark p-1 rounded text-xs"><i class="fa-solid fa-chart-line"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-melgarDark">Cultura del Control y Evaluación</h4>
+                                    <p class="text-[11px] text-gray-600 mt-0.5">Basar la toma de decisiones institucionales en datos, evidencias sólidas y control interno.</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-start gap-2.5">
+                                <span class="bg-purple-600 text-white p-1 rounded text-xs"><i class="fa-solid fa-users"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-melgarDark">Participación Ciudadana Activa</h4>
+                                    <p class="text-[11px] text-gray-600 mt-0.5">Garantizar que la comunidad participe activamente en la planeación y evaluación de nuestra alcaldía.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 4: PRINCIPIOS (PARTE I) -->
+                <div id="page-content-4" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">4</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Nuestros Principios MIPG (I)</h2>
+                        </div>
+                        <p class="text-xs text-gray-500 italic">Haz clic en cada principio para ver cómo lo aplicamos en la Alcaldía de Melgar:</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Principio 1 -->
+                            <div onclick="togglePrincipio('p1')" class="cursor-pointer bg-white border-2 border-melgarYellow/40 rounded-xl p-4 hover:shadow-lg transition transform hover:-translate-y-1">
+                                <div class="flex items-center gap-2 text-melgarRed">
+                                    <i class="fa-solid fa-bullseye text-lg"></i>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">1. Orientación a Resultados</h3>
+                                </div>
+                                <p class="text-[11px] text-gray-600 mt-2">Ponemos en el centro las necesidades reales de los ciudadanos de Melgar.</p>
+                                <div id="p1-desc" class="hidden mt-3 pt-3 border-t border-gray-100 text-[10px] text-melgarGreen font-semibold">
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Caracterización de usuarios</p>
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Análisis de contexto turístico</p>
+                                    <p><i class="fa-solid fa-check mr-1"></i> Programación presupuestal eficiente</p>
+                                </div>
+                            </div>
+
+                            <!-- Principio 2 -->
+                            <div onclick="togglePrincipio('p2')" class="cursor-pointer bg-white border-2 border-melgarYellow/40 rounded-xl p-4 hover:shadow-lg transition transform hover:-translate-y-1">
+                                <div class="flex items-center gap-2 text-melgarRed">
+                                    <i class="fa-solid fa-handshake-angle text-lg"></i>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">2. Articulación</h3>
+                                </div>
+                                <p class="text-[11px] text-gray-600 mt-2">Coordinamos con la Gobernación del Tolima y entidades nacionales de manera efectiva.</p>
+                                <div id="p2-desc" class="hidden mt-3 pt-3 border-t border-gray-100 text-[10px] text-melgarGreen font-semibold">
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Alianzas de desarrollo</p>
+                                    <p><i class="fa-solid fa-check mr-1"></i> Capacidad institucional articulada</p>
+                                </div>
+                            </div>
+
+                            <!-- Principio 3 -->
+                            <div onclick="togglePrincipio('p3')" class="cursor-pointer bg-white border-2 border-melgarYellow/40 rounded-xl p-4 hover:shadow-lg transition transform hover:-translate-y-1">
+                                <div class="flex items-center gap-2 text-melgarRed">
+                                    <i class="fa-solid fa-award text-lg"></i>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">3. Excelencia y Calidad</h3>
+                                </div>
+                                <p class="text-[11px] text-gray-600 mt-2">Bienes y servicios municipales que superan expectativas.</p>
+                                <div id="p3-desc" class="hidden mt-3 pt-3 border-t border-gray-100 text-[10px] text-melgarGreen font-semibold">
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Modelo por procesos</p>
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Racionalización de Trámites</p>
+                                    <p><i class="fa-solid fa-check mr-1"></i> Servicio al ciudadano integral</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Globo de diálogo Gualí -->
+                        <div class="bg-melgarYellow/20 p-3.5 rounded-xl border border-melgarYellow flex items-center gap-3">
+                            <div class="bg-white rounded-full p-1 border border-melgarYellow shrink-0">
+                                <svg viewBox="0 0 200 200" class="w-10 h-10">
+                                    <circle cx="100" cy="100" r="90" fill="#4ade80" />
+                                    <circle cx="85" cy="95" r="14" fill="white" /><circle cx="115" cy="95" r="14" fill="white" />
+                                    <circle cx="85" cy="95" r="6" fill="black" /><circle cx="115" cy="95" r="6" fill="black" />
+                                    <path d="M85 125 Q100 140 115 125" fill="none" stroke="#166534" stroke-width="6" />
+                                </svg>
+                            </div>
+                            <p class="text-xs font-semibold text-gray-700">
+                                <span class="font-bold text-melgarRed">¿Sabías qué?</span> Al hacer clic en las tarjetas de arriba, puedes verificar las acciones del plan institucional de Melgar. ¡Pruébalo!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 5: PRINCIPIOS (PARTE II) -->
+                <div id="page-content-5" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">5</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Nuestros Principios MIPG (II)</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Principio 4 -->
+                            <div onclick="togglePrincipio('p4')" class="cursor-pointer bg-white border-2 border-melgarYellow/40 rounded-xl p-4 hover:shadow-lg transition transform hover:-translate-y-1">
+                                <div class="flex items-center gap-2 text-melgarRed">
+                                    <i class="fa-solid fa-lightbulb text-lg"></i>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">4. Aprendizaje e Innovación</h3>
+                                </div>
+                                <p class="text-[11px] text-gray-600 mt-2">Evolución continua basándonos en la gestión de conocimiento del municipio de Melgar.</p>
+                                <div id="p4-desc" class="hidden mt-3 pt-3 border-t border-gray-100 text-[10px] text-melgarGreen font-semibold">
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Gestión del conocimiento</p>
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Innovación pública en Tolima</p>
+                                    <p><i class="fa-solid fa-check mr-1"></i> Evaluaciones de desempeño</p>
+                                </div>
+                            </div>
+
+                            <!-- Principio 5 -->
+                            <div onclick="togglePrincipio('p5')" class="cursor-pointer bg-white border-2 border-melgarYellow/40 rounded-xl p-4 hover:shadow-lg transition transform hover:-translate-y-1">
+                                <div class="flex items-center gap-2 text-melgarRed">
+                                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">5. Integridad e Confianza</h3>
+                                </div>
+                                <p class="text-[11px] text-gray-600 mt-2">La ética como pilar rector de todo el gabinete de la alcaldía de Melgar.</p>
+                                <div id="p5-desc" class="hidden mt-3 pt-3 border-t border-gray-100 text-[10px] text-melgarGreen font-semibold">
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Código de Integridad</p>
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Transparencia y Anticorrupción</p>
+                                    <p><i class="fa-solid fa-check mr-1"></i> Gestión Ambiental Responsable</p>
+                                </div>
+                            </div>
+
+                            <!-- Principio 6 -->
+                            <div onclick="togglePrincipio('p6')" class="cursor-pointer bg-white border-2 border-melgarYellow/40 rounded-xl p-4 hover:shadow-lg transition transform hover:-translate-y-1">
+                                <div class="flex items-center gap-2 text-melgarRed">
+                                    <i class="fa-solid fa-magnifying-glass-chart text-lg"></i>
+                                    <h3 class="font-bold text-xs uppercase tracking-wider">6. Decisiones con Evidencia</h3>
+                                </div>
+                                <p class="text-[11px] text-gray-600 mt-2">Evaluamos estadísticas y encuestas reales para planificar las mejoras del municipio.</p>
+                                <div id="p6-desc" class="hidden mt-3 pt-3 border-t border-gray-100 text-[10px] text-melgarGreen font-semibold">
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Estadísticas territoriales</p>
+                                    <p class="mb-1"><i class="fa-solid fa-check mr-1"></i> Seguimiento al control interno</p>
+                                    <p><i class="fa-solid fa-check mr-1"></i> Reportes de metas cumplidas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 6: MODELO DE GESTIÓN Y ALCANCE -->
+                <div id="page-content-6" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">6</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Modelo de Gestión Institucional</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div class="space-y-4">
+                                <h3 class="font-bold text-sm text-melgarDark">Enfoque de la Gestión de la Alcaldía de Melgar</h3>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    La administración municipal opera con un enfoque sistemático de **gerenciamiento por procesos**. Esto integra la planeación, el control interno y la autoevaluación para responder de manera óptima a las necesidades de la ciudadanía de Melgar.
+                                </p>
+                                <h4 class="font-semibold text-xs text-melgarRed">El Alcance del Modelo:</h4>
+                                <ul class="list-disc pl-4 text-xs text-gray-600 space-y-1">
+                                    <li>Identificar continuamente oportunidades de mejora.</li>
+                                    <li>Análisis riguroso de quejas, reclamos y necesidades del ciudadano.</li>
+                                    <li>Implementación coordinada de planes de mejora.</li>
+                                    <li>Autoevaluación permanente por medio de las líneas de defensa.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Gráfico de Tres Líneas de Defensa Interactivo -->
+                            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-center space-y-3">
+                                <span class="text-xs font-bold text-melgarRed block uppercase tracking-wider">Las 3 Líneas de Defensa</span>
+                                <div class="space-y-2">
+                                    <div class="bg-[#c4222d] text-white py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer hover:scale-105 transition shadow-sm" onclick="showDefensa(1)">
+                                        1ra Línea de Defensa: Liderazgo y Ejecución
+                                    </div>
+                                    <div class="bg-[#f6d82f] text-melgarDark py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer hover:scale-105 transition shadow-sm" onclick="showDefensa(2)">
+                                        2da Línea de Defensa: Monitoreo y Planeación
+                                    </div>
+                                    <div class="bg-melgarDark text-white py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer hover:scale-105 transition shadow-sm" onclick="showDefensa(3)">
+                                        3ra Línea de Defensa: Evaluación Independiente (Control)
+                                    </div>
+                                </div>
+                                <div id="defensa-text" class="bg-white p-3 rounded-xl border border-gray-200 text-[11px] text-gray-600 min-h-[60px] flex items-center justify-center">
+                                    Haz clic en cualquiera de las líneas de defensa de arriba para ver su función institucional en Melgar.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 7: EL CICLO PHVA -->
+                <div id="page-content-7" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">7</span>
+                            <h2 class="font-title text-2xl text-melgarRed">El Ciclo de Mejora Continua (PHVA)</h2>
+                        </div>
+                        
+                        <p class="text-xs text-gray-600">
+                            Nuestra gestión se basa en la mejora continua por medio de la estandarización y apropiación del ciclo de Deming:
+                        </p>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                            <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl">
+                                <span class="font-title text-2xl text-sky-600 block">P</span>
+                                <span class="font-bold text-xs text-sky-800 block uppercase">Planificar</span>
+                                <p class="text-[10px] text-sky-900 mt-1">Definir objetivos y diseñar planes para el desarrollo del municipio.</p>
+                            </div>
+
+                            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                                <span class="font-title text-2xl text-emerald-600 block">H</span>
+                                <span class="font-bold text-xs text-emerald-800 block uppercase">Hacer</span>
+                                <p class="text-[10px] text-emerald-900 mt-1">Capacitar a los funcionarios y ejecutar los proyectos con rigor.</p>
+                            </div>
+
+                            <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                                <span class="font-title text-2xl text-amber-600 block">V</span>
+                                <span class="font-bold text-xs text-amber-800 block uppercase">Verificar</span>
+                                <p class="text-[10px] text-amber-900 mt-1">Medir resultados de las tareas y recopilar datos estadísticos.</p>
+                            </div>
+
+                            <div class="bg-rose-50 border border-rose-200 p-3 rounded-xl">
+                                <span class="font-title text-2xl text-rose-600 block">A</span>
+                                <span class="font-bold text-xs text-rose-800 block uppercase">Actuar</span>
+                                <p class="text-[10px] text-rose-900 mt-1">Estandarizar las buenas prácticas, corregir desvíos y repetir el ciclo.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-start gap-3">
+                            <i class="fa-solid fa-graduation-cap text-melgarYellow text-xl"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-melgarDark">El Aprendizaje Organizacional</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">
+                                    En Melgar transformamos la teoría en práctica. Las lecciones aprendidas se consolidan anualmente en la **Biblioteca Virtual Institucional** para la consulta de todo el talento humano de la Alcaldía de Melgar.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 8: LAS 7 DIMENSIONES DEL MIPG -->
+                <div id="page-content-8" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">8</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Las 7 Dimensiones del MIPG Melgar</h2>
+                        </div>
+                        
+                        <p class="text-xs text-gray-600">Haz clic en cada dimensión para conocer el propósito y sus políticas:</p>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                            <button onclick="showDimension(1)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                1. Talento Humano
+                            </button>
+                            <button onclick="showDimension(2)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                2. Direccionamiento
+                            </button>
+                            <button onclick="showDimension(3)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                3. Gestión para Resultados
+                            </button>
+                            <button onclick="showDimension(4)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                4. Evaluación Resultados
+                            </button>
+                            <button onclick="showDimension(5)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                5. Info y Comunicación
+                            </button>
+                            <button onclick="showDimension(6)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                6. Conocimiento & Innovación
+                            </button>
+                            <button onclick="showDimension(7)" class="bg-melgarRed text-white p-2.5 rounded-lg text-xs font-bold hover:scale-105 transition text-left">
+                                7. Control Interno
+                            </button>
+                            <button class="bg-melgarDark text-melgarYellow p-2.5 rounded-lg text-xs font-bold border border-melgarYellow text-center flex items-center justify-center gap-1 cursor-default">
+                                <i class="fa-solid fa-star"></i> Integración
+                            </button>
+                        </div>
+
+                        <!-- Panel de Detalle de Dimensión -->
+                        <div id="dimension-panel" class="bg-gray-50 border border-gray-200 p-4 rounded-xl min-h-[140px]">
+                            <h3 id="dimension-title" class="font-bold text-sm text-melgarRed">Dimensión 1: Talento Humano</h3>
+                            <p id="dimension-desc" class="text-xs text-gray-600 mt-1 leading-relaxed">
+                                Ofrece las herramientas necesarias para gestionar el ciclo de vida del servidor público (ingreso, desarrollo y retiro), promoviendo la meritocracia, la integridad y el desarrollo continuo de las competencias de nuestros funcionarios en Melgar.
+                            </p>
+                            <div class="mt-2 text-[10px] text-melgarGreen font-semibold" id="dimension-policies">
+                                <i class="fa-solid fa-circle-check mr-1"></i> Política de Talento Humano | <i class="fa-solid fa-circle-check mr-1"></i> Política de Integridad
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 9: GLOSARIO INTERACTIVO -->
+                <div id="page-content-9" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">9</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Glosario de Excelencia</h2>
+                        </div>
+                        
+                        <!-- Buscador integrado -->
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                            </span>
+                            <input type="text" id="glosario-search" onkeyup="filterGlosario()" placeholder="Busca un concepto (ej. Autoevaluación, PHVA, No conformidad)..." class="w-full pl-9 pr-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-melgarYellow text-sm">
+                        </div>
+
+                        <!-- Tarjetas del Glosario -->
+                        <div id="glosario-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[250px] overflow-y-auto pr-2">
+                            <div class="glosario-item bg-white p-3 rounded-lg border border-gray-150" data-term="autoevaluacion">
+                                <h4 class="font-bold text-xs text-melgarRed uppercase">Autoevaluación</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">Proceso permanente de verificación, diagnóstico, análisis y retroalimentación interna de los procesos de la Alcaldía de Melgar.</p>
+                            </div>
+                            <div class="glosario-item bg-white p-3 rounded-lg border border-gray-150" data-term="accion de mejora">
+                                <h4 class="font-bold text-xs text-melgarRed uppercase">Acción de Mejora</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">Actividades para superar los estándares de calidad vigentes de los procesos de cara a la satisfacción del ciudadano.</p>
+                            </div>
+                            <div class="glosario-item bg-white p-3 rounded-lg border border-gray-150" data-term="leccion aprendida">
+                                <h4 class="font-bold text-xs text-melgarRed uppercase">Lección Aprendida</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">Conocimiento adquirido a través de la experiencia institucional, ya sea a través de éxitos o de fracasos identificados en la gestión.</p>
+                            </div>
+                            <div class="glosario-item bg-white p-3 rounded-lg border border-gray-150" data-term="no conformidad">
+                                <h4 class="font-bold text-xs text-melgarRed uppercase">No Conformidad</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">Incumplimiento o no satisfacción de un requisito normativo o un criterio establecido legalmente.</p>
+                            </div>
+                            <div class="glosario-item bg-white p-3 rounded-lg border border-gray-150" data-term="mejoramiento continuo">
+                                <h4 class="font-bold text-xs text-melgarRed uppercase">Mejoramiento Continuo</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">Ejercicio sistemático y permanente para elevar los resultados de la administración sumando la participación de todas las áreas.</p>
+                            </div>
+                            <div class="glosario-item bg-white p-3 rounded-lg border border-gray-150" data-term="phva">
+                                <h4 class="font-bold text-xs text-melgarRed uppercase">Ciclo PHVA</h4>
+                                <p class="text-[11px] text-gray-600 mt-1 leading-relaxed">Planificar, Hacer, Verificar y Actuar. Metodología de gestión y optimización de calidad utilizada a nivel internacional.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA 10: AUTOEVALUACIÓN DE APROPIACIÓN (QUIZ) -->
+                <div id="page-content-10" class="page-transition hidden">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 border-b-2 border-melgarYellow pb-3">
+                            <span class="w-8 h-8 rounded-full bg-melgarRed text-white flex items-center justify-center font-bold">10</span>
+                            <h2 class="font-title text-2xl text-melgarRed">Gualí Trivia & Certificado</h2>
+                        </div>
+                        
+                        <div id="quiz-container" class="space-y-4">
+                            <p class="text-xs text-gray-600">Demuestra tus conocimientos en MIPG respondiendo la siguiente pregunta:</p>
+                            
+                            <div class="bg-melgarYellow/10 p-4 rounded-xl border border-melgarYellow space-y-3">
+                                <h4 class="font-bold text-sm text-melgarDark">¿Cuál es el principio de MIPG que prioriza las necesidades de los ciudadanos del municipio de Melgar en el centro del accionar?</h4>
+                                
+                                <div class="space-y-2 text-xs">
+                                    <label class="flex items-center gap-3 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                        <input type="radio" name="mipg-q" value="A" class="accent-melgarRed">
+                                        <span>A) Aprendizaje e Innovación</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                        <input type="radio" name="mipg-q" value="B" class="accent-melgarRed">
+                                        <span>B) Orientación a Resultados</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50 transition">
+                                        <input type="radio" name="mipg-q" value="C" class="accent-melgarRed">
+                                        <span>C) Decisiones basadas en suposiciones</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button onclick="checkQuizAnswer()" class="bg-melgarRed text-white text-xs font-bold py-2.5 px-6 rounded-xl hover:bg-red-700 transition">
+                                Enviar Respuesta
+                            </button>
+                        </div>
+
+                        <!-- Mensaje de Éxito / Certificado de Apropiación -->
+                        <div id="certificate-container" class="hidden bg-emerald-50 border-2 border-emerald-400 p-6 rounded-2xl text-center space-y-4">
+                            <div class="inline-flex items-center justify-center w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full text-3xl">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <h3 class="font-title text-xl text-emerald-800">¡Felicitaciones, eres un Servidor Calidoso!</h3>
+                            <p class="text-xs text-emerald-700 max-w-md mx-auto leading-relaxed">
+                                Has comprendido los fundamentos básicos de la cartilla del MIPG de la Alcaldía de Melgar. Juntos construimos una administración ejemplar, transparente e innovadora.
+                            </p>
+                            <div class="border-t border-emerald-200 pt-3 flex flex-col sm:flex-row items-center justify-between text-[11px] text-emerald-800 font-semibold gap-2">
+                                <span>Acreditado por: Alcaldía de Melgar</span>
+                                <span class="bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full uppercase text-[9px] tracking-wider font-bold">Apropiación MIPG</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer del visor de páginas (Navegación general) -->
+                <div class="mt-8 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <button id="prev-btn" onclick="prevPage()" class="opacity-50 cursor-not-allowed bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2 px-4 rounded-xl flex items-center gap-2 transition" disabled>
+                        <i class="fa-solid fa-chevron-left"></i> Anterior
+                    </button>
+                    
+                    <span class="text-xs font-bold text-gray-400">
+                        Pág <span id="current-page-num" class="text-melgarRed font-extrabold text-sm">1</span> / 10
+                    </span>
+
+                    <button id="next-btn" onclick="nextPage()" class="bg-melgarYellow hover:bg-amber-400 text-melgarDark font-bold text-xs py-2 px-4 rounded-xl flex items-center gap-2 transition shadow-sm">
+                        Siguiente <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Pie de página Institucional -->
+    <footer class="bg-melgarDark text-white py-6 px-4 text-center border-t-4 border-melgarRed">
+        <div class="max-w-7xl mx-auto space-y-3">
+            <div class="flex justify-center gap-6 text-sm text-gray-400">
+                <a href="https://www.melgar-tolima.gov.co/" target="_blank" class="hover:text-melgarYellow transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-globe"></i> Web Oficial de Melgar
+                </a>
+                <span class="text-gray-700">|</span>
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved text-melgarYellow"></i> Secretaría de Planeación y TIC
+                </span>
+            </div>
+            <p class="text-xs text-gray-500">
+                &copy; 2026 Alcaldía de Melgar, Tolima. Todos los derechos reservados. Diseñado en concordancia con los lineamientos de Función Pública de la República de Colombia.
+            </p>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT DE LA CARTILLA -->
+    <script>
+        let currentPage = 1;
+        const totalPages = 10;
+
+        // Función para cambiar de página
+        function goToPage(pageNumber) {
+            // Guardar página anterior
+            const prevPageContent = document.getElementById(`page-content-${currentPage}`);
+            const prevSidebarBtn = document.getElementById(`btn-page-${currentPage}`);
+            
+            // Ocultar contenido anterior
+            if(prevPageContent) prevPageContent.classList.add('hidden');
+            if(prevSidebarBtn) {
+                prevSidebarBtn.className = "w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 hover:bg-white/10 text-gray-300 transition";
+            }
+
+            // Cambiar página actual
+            currentPage = pageNumber;
+
+            // Mostrar nuevo contenido
+            const nextPageContent = document.getElementById(`page-content-${currentPage}`);
+            const nextSidebarBtn = document.getElementById(`btn-page-${currentPage}`);
+            
+            if(nextPageContent) nextPageContent.classList.remove('hidden');
+            if(nextSidebarBtn) {
+                nextSidebarBtn.className = "w-full text-left py-2 px-3 rounded-lg flex items-center gap-3 bg-melgarRed text-white font-semibold transition";
+            }
+
+            // Actualizar número de página en pie
+            document.getElementById('current-page-num').innerText = currentPage;
+
+            // Manejo del estado de los botones de navegación
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (currentPage === 1) {
+                prevBtn.disabled = true;
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (currentPage === totalPages) {
+                nextBtn.disabled = true;
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        }
+
+        // Función para mostrar descriptivos de principios en Pág 4 y 5
+        function togglePrincipio(id) {
+            const el = document.getElementById(`${id}-desc`);
+            if (el) {
+                el.classList.toggle('hidden');
+            }
+        }
+
+        // Función interactiva de Líneas de Defensa
+        function showDefensa(num) {
+            const descEl = document.getElementById('defensa-text');
+            let content = "";
+            switch (num) {
+                case 1:
+                    content = "<strong>1ra Línea: Liderazgo y Ejecución</strong><br>Compuesta por los directores de departamento y personal operativo de la Alcaldía de Melgar. Son los responsables del control del día a día, la gestión de riesgos y la aplicación directa de procesos.";
+                    break;
+                case 2:
+                    content = "<strong>2da Línea: Monitoreo y Planeación</strong><br>Liderada por la Secretaría de Planeación y TIC. Se encarga de diseñar herramientas de medición, consolidar riesgos, supervisar la calidad de los trámites y acompañar los planes de acción.";
+                    break;
+                case 3:
+                    content = "<strong>3ra Línea: Evaluación Independiente (Control Interno)</strong><br>Representada por la Oficina de Control Interno de Melgar. Evalúa de manera imparcial la efectividad de las dos líneas anteriores a través de auditorías constantes.";
+                    break;
+            }
+            descEl.innerHTML = content;
+        }
+
+        // Función interactiva de las 7 Dimensiones
+        function showDimension(num) {
+            const titleEl = document.getElementById('dimension-title');
+            const descEl = document.getElementById('dimension-desc');
+            const policiesEl = document.getElementById('dimension-policies');
+
+            switch (num) {
+                case 1:
+                    titleEl.innerText = "Dimensión 1: Talento Humano";
+                    descEl.innerText = "Ofrece las herramientas necesarias para gestionar el ciclo de vida del servidor público (ingreso, desarrollo y retiro), promoviendo la meritocracia, la integridad y el desarrollo continuo de las competencias de nuestros funcionarios en Melgar.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Política de Talento Humano | <i class='fa-solid fa-circle-check mr-1'></i> Política de Integridad";
+                    break;
+                case 2:
+                    titleEl.innerText = "Dimensión 2: Direccionamiento Estratégico";
+                    descEl.innerText = "Define la ruta clara que guiará el desarrollo de la administración municipal de Melgar, para asegurar los derechos de los ciudadanos y solucionar los problemas planteados en el Plan de Desarrollo Territorial.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Planeación Estratégica | <i class='fa-solid fa-circle-check mr-1'></i> Gestión Presupuestal y Eficiencia del Gasto";
+                    break;
+                case 3:
+                    titleEl.innerText = "Dimensión 3: Gestión con Valores para Resultados";
+                    descEl.innerText = "Busca garantizar que las decisiones de planeación se conviertan en realidades, mejorando la interacción estado-ciudadano con un uso intensivo de tecnologías digitales seguras.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Simplificación de Procesos | <i class='fa-solid fa-circle-check mr-1'></i> Gobierno Digital | <i class='fa-solid fa-circle-check mr-1'></i> Seguridad Digital";
+                    break;
+                case 4:
+                    titleEl.innerText = "Dimensión 4: Evaluación de Resultados";
+                    descEl.innerText = "Promueve el seguimiento riguroso y la autoevaluación permanente de los indicadores municipales de Melgar para corregir desviaciones con agilidad.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Servicio al Ciudadano | <i class='fa-solid fa-circle-check mr-1'></i> Racionalización de Trámites";
+                    break;
+                case 5:
+                    titleEl.innerText = "Dimensión 5: Información y Comunicación";
+                    descEl.innerText = "Asegura que los flujos de información fluyan eficazmente de forma interna y externa, cumpliendo rigurosamente con la Ley de Transparencia colombiana.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Transparencia y Acceso a la Información | <i class='fa-solid fa-circle-check mr-1'></i> Gestión Documental";
+                    break;
+                case 6:
+                    titleEl.innerText = "Dimensión 6: Gestión del Conocimiento y la Innovación";
+                    descEl.innerText = "Promueve el aprendizaje práctico (aprender haciendo), para que los funcionarios puedan transferir saberes de manera ágil e implementar ideas innovadoras que mejoren el municipio.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Política de Gestión del Conocimiento e Innovación";
+                    break;
+                case 7:
+                    titleEl.innerText = "Dimensión 7: Control Interno";
+                    descEl.innerText = "Provee las directrices del Modelo Estándar de Control Interno (MECI) para salvaguardar los recursos municipales y garantizar el cumplimiento exitoso de nuestras metas.";
+                    policiesEl.innerHTML = "<i class='fa-solid fa-circle-check mr-1'></i> Política de Control Interno";
+                    break;
+            }
+        }
+
+        // Filtro del glosario mediante buscador
+        function filterGlosario() {
+            const input = document.getElementById('glosario-search').value.toLowerCase();
+            const items = document.querySelectorAll('.glosario-item');
+
+            items.forEach(item => {
+                const term = item.getAttribute('data-term');
+                const titleText = item.querySelector('h4').innerText.toLowerCase();
+                const descText = item.querySelector('p').innerText.toLowerCase();
+
+                if (term.includes(input) || titleText.includes(input) || descText.includes(input)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        // Lógica del Quiz interactivo de la trivia
+        function checkQuizAnswer() {
+            const radios = document.getElementsByName('mipg-q');
+            let selectedValue = "";
+            for (let radio of radios) {
+                if (radio.checked) {
+                    selectedValue = radio.value;
+                    break;
+                }
+            }
+
+            if (!selectedValue) {
+                alert("Por favor selecciona una respuesta antes de continuar.");
+                return;
+            }
+
+            const quizContainer = document.getElementById('quiz-container');
+            const certContainer = document.getElementById('certificate-container');
+
+            if (selectedValue === "B") {
+                quizContainer.classList.add('hidden');
+                certContainer.classList.remove('hidden');
+            } else {
+                // Alerta nativa personalizada simulando modal para evitar error de alert() de iFrame en Canvas
+                const modal = document.createElement('div');
+                modal.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4";
+                modal.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl max-w-sm text-center space-y-4 border-2 border-melgarRed shadow-2xl">
+                        <i class="fa-solid fa-triangle-exclamation text-melgarRed text-4xl"></i>
+                        <h4 class="font-bold text-lg text-melgarDark">¡Respuesta Incorrecta!</h4>
+                        <p class="text-xs text-gray-600">Gualí te sugiere repasar el Principio de Orientación a Resultados en la página 4. ¡Vuelve a intentarlo!</p>
+                        <button onclick="this.parentElement.parentElement.remove()" class="bg-melgarRed text-white text-xs font-bold px-4 py-2 rounded-xl">Intentar de nuevo</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+        }
+    </script>
+</body>
+</html>
